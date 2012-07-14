@@ -1,52 +1,34 @@
-import inspect
-
 from glob import iglob
 from os.path import join
 
-
-class Test(object):
-
-    def __init__(self, callback, setup=None, tear_down=None):
-        self.callback = callback
-        self.setup = setup
-        self.tear_down = tear_down
-
-    def __call__(self):
-        if self.setup:
-            self.setup()
-        self.callback()
-        if self.tear_down:
-            self.tear_down()
+from loaders import TestLoader, UnittestLoader
+from core import Test
 
 
-class TestLoader(object):
+class TestRunner(object):
 
-    def load_module(self, module):
-        for var in module.__dict__.values():
-            if inspect.isfunction(var):
-                yield Test(var)
+    def __init__(self):
+        self.loaders = {}
 
-            if inspect.isclass(var):
-                instance = var()
+    def set_loaders(self, loaders):
+        self.loaders = loaders
 
-                set_up_method = None
-                if hasattr(instance, 'setUp'):
-                    set_up_method = instance.setUp
+    def _load_modules(self, modules):
+        levels = self.loaders.keys()
+        levels.sort(reverse=True)
 
-                tear_down_method = None
-                if hasattr(instance, 'tearDown'):
-                    tear_down_method = instance.tearDown
+        for module in modules:
+            for var in module.__dict__.values():
+                for loader in self._iter_loaders(levels):
+                    test = loader.load_object(var)
 
-                for instance_var_name in dir(instance):
-                    if not instance_var_name.startswith('test'):
-                        continue
+                    if test:
+                        break
 
-                    instance_var = getattr(instance, instance_var_name)
-                    if not inspect.ismethod(instance_var):
-                        continue
-
-                    yield Test(instance_var, setup=set_up_method,
-                            tear_down=tear_down_method)
+    def _iter_loaders(self, levels):
+        for level in levels:
+            for loader in self.loaders[level]:
+                yield loader
 
 
 class TestFinder(object):
@@ -58,11 +40,11 @@ class TestFinder(object):
         return iglob(self.path)
 
 
-class TestRunner(object):
+class TestExecutor(object):
 
     def __init__(self, test_suite):
         self.test_suite = test_suite
 
-    def run(self):
+    def execute(self):
         for test in self.test_suite:
             test()

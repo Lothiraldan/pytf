@@ -1,4 +1,9 @@
-from mock import Mock
+import unittest
+
+try:
+    from unittest.mock import Mock
+except ImportError:
+    from mock import Mock
 
 
 class FakeModule(object):
@@ -28,3 +33,51 @@ def TestMock():
         def tearDown(self):
             self.tear_down_mock()
     return TestMockClass
+
+
+def TestMockMultipleTests():
+    class TestMockClass(object):
+
+        instances = []
+
+        set_up_mock = Mock()
+        test_mock = Mock()
+        tear_down_mock = Mock()
+
+        def setUp(self):
+            TestMockClass.instances.append(self)
+            self.set_up_mock()
+
+        def test_test_1(self):
+            self.test_mock()
+
+        def test_test_2(self):
+            self.test_mock()
+
+        def test_test_3(self):
+            self.test_mock()
+
+        def tearDown(self):
+            self.tear_down_mock()
+    return TestMockClass
+
+
+def UnittestCaseMock():
+    class UnittestCaseMockClass(unittest.TestCase):
+        set_up_mock = Mock()
+        test_mock = Mock()
+        tear_down_mock = Mock()
+
+        def setUp(self):
+            self.set_up_mock()
+
+        def test_test(self):
+            self.test_mock()
+            self.assertTrue(True)
+            self.assertFalse(False)
+            self.assertEqual(0, 0)
+            self.assertRaises(IndexError, lambda: [][1])
+
+        def tearDown(self):
+            self.tear_down_mock()
+    return UnittestCaseMockClass
