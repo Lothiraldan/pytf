@@ -10,6 +10,7 @@ class FakeModule(object):
 
     def __init__(self, module_dict):
         self.__dict__ = module_dict
+        self.__name__ = 'fake_module'
 
 
 def FunctionMock(Mock):

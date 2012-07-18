@@ -2,7 +2,7 @@ import unittest
 
 from pytf import UnittestLoader
 
-from utils import UnittestCaseMock
+from utils import UnittestCaseMock, FakeModule
 
 
 class UnittestLoaderTestCase(unittest.TestCase):
@@ -11,7 +11,7 @@ class UnittestLoaderTestCase(unittest.TestCase):
         fake_test_case = UnittestCaseMock()
 
         loader = UnittestLoader()
-        test_suite = list(loader.load_object(fake_test_case))
+        test_suite = list(loader.load_object(fake_test_case, FakeModule({})))
 
         self.assertEquals(len(test_suite), 1)
         test_suite[0]()

@@ -6,9 +6,9 @@ from pytf.core import Test
 
 class TestLoader(object):
 
-    def load_object(self, obj):
+    def load_object(self, obj, module):
         if inspect.isfunction(obj):
-            yield Test(obj)
+            yield Test('id', obj)
 
         if inspect.isclass(obj):
             for test in self._gen_test_for_class(obj):
@@ -39,13 +39,14 @@ class TestLoader(object):
             if has_tear_down:
                 tear_down_method = getattr(instance, 'tearDown')
 
-            yield Test(test_method, setup=set_up_method,
+            test_id = 'test'
+            yield Test(test_id, test_method, set_up=set_up_method,
                     tear_down=tear_down_method)
 
 
 # Unittest compatibility loader
 class UnittestLoader(TestLoader):
-    def load_object(self, klass):
+    def load_object(self, klass, module):
         if not issubclass(klass, unittest.TestCase):
             return
 
@@ -61,5 +62,6 @@ class UnittestLoader(TestLoader):
 
             tear_down_method = getattr(instance, 'tearDown')
 
-            yield Test(test_method, setup=set_up_method,
+            test_id = "%s.%s" % (module.__name__, klass.__name__)
+            yield Test(test_id, test_method, set_up=set_up_method,
                     tear_down=tear_down_method)

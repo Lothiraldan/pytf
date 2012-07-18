@@ -2,7 +2,7 @@ from glob import iglob
 from os.path import join
 
 from loaders import TestLoader, UnittestLoader
-from core import Test
+from core import Test, TestException
 
 
 class TestRunner(object):
@@ -18,9 +18,13 @@ class TestRunner(object):
         levels.sort(reverse=True)
 
         for module in modules:
-            for var in module.__dict__.values():
+            for var_name, var in module.__dict__.items():
+
+                if var_name.startswith('_'):
+                    continue
+
                 for loader in self._iter_loaders(levels):
-                    test = loader.load_object(var)
+                    test = loader.load_object(var, module)
 
                     if test:
                         break
