@@ -50,5 +50,15 @@ class TestExecutor(object):
         self.test_suite = test_suite
 
     def execute(self):
+        global_test_result = []
         for test in self.test_suite:
+            # Prepare test result
+            test_result = {'test_id': test.test_id}
+
+            # Run test
             test()
+
+            # Save test result
+            test_result['success'] = True
+            global_test_result.append(test_result)
+        return global_test_result

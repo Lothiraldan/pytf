@@ -10,6 +10,9 @@ from pytf import TestRunner
 
 
 class TestTestRunner(unittest.TestCase):
+    '''The rule is try to call each loader by descending level and as soon as
+    one loader return a test, take it and iterate over next variables.
+    '''
 
     def setUp(self):
         self.module_object = sentinel.OBJECT

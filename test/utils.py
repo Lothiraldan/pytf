@@ -19,11 +19,12 @@ def FunctionMock(Mock):
     return call
 
 
-def TestMock():
+def TestMock(mock_test_id='test_id'):
     class TestMockClass(object):
         set_up_mock = Mock()
         test_mock = Mock()
         tear_down_mock = Mock()
+        test_id = mock_test_id
 
         def setUp(self):
             self.set_up_mock()

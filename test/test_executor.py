@@ -7,6 +7,8 @@ except ImportError:
 
 from pytf import TestExecutor
 
+from utils import TestMock
+
 
 class TestTestExecutor(unittest.TestCase):
 
@@ -18,6 +20,17 @@ class TestTestExecutor(unittest.TestCase):
 
         for test in test_suite:
             self.assertTrue(test.called)
+
+    def test_simple_result(self):
+        test_suite = [TestMock()]
+
+        test_runner = TestExecutor(test_suite)
+        test_result = test_runner.execute()
+
+        self.assertEqual(len(test_result), 1)
+        self.assertEqual(test_result[0]['test_id'], test_suite[0].test_id)
+        self.assertEqual(test_result[0]['success'], True)
+
 
 if __name__ == "__main__":
     unittest.main()
