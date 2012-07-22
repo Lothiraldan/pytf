@@ -5,7 +5,7 @@ try:
 except ImportError:
     from mock import Mock
 
-from pytf import TestExecutor
+from pytf import TestExecutor, Test, TestException
 
 from utils import TestMock
 
@@ -22,7 +22,7 @@ class TestTestExecutor(unittest.TestCase):
             self.assertTrue(test.called)
 
     def test_simple_result(self):
-        test_suite = [TestMock()]
+        test_suite = [Test('test_id', Mock())]
 
         test_runner = TestExecutor(test_suite)
         test_result = test_runner.execute()
@@ -30,6 +30,17 @@ class TestTestExecutor(unittest.TestCase):
         self.assertEqual(len(test_result), 1)
         self.assertEqual(test_result[0]['test_id'], test_suite[0].test_id)
         self.assertEqual(test_result[0]['success'], True)
+
+    def test_simple_fail_result(self):
+        test_suite = [Test('test_id', Mock(side_effect=Exception))]
+
+        test_runner = TestExecutor(test_suite)
+        test_result = test_runner.execute()
+
+        self.assertEqual(len(test_result), 1)
+        self.assertEqual(test_result[0]['test_id'], test_suite[0].test_id)
+        self.assertEqual(test_result[0]['success'], False)
+        self.assertTrue(isinstance(test_result[0]['exception'], TestException))
 
 
 if __name__ == "__main__":

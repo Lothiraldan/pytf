@@ -56,9 +56,14 @@ class TestExecutor(object):
             test_result = {'test_id': test.test_id}
 
             # Run test
-            test()
+            try:
+                test()
+            except TestException as test_exception:
+                test_result['success'] = False
+                test_result['exception'] = test_exception
+            else:
+                test_result['success'] = True
 
             # Save test result
-            test_result['success'] = True
             global_test_result.append(test_result)
         return global_test_result
