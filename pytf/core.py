@@ -26,6 +26,12 @@ class Test(object):
             raise TestException("Exception during %s" % phase, self.test_id,
                 callback, phase, e, sys.exc_info())
 
+    def __eq__(self, test):
+        return self.__dict__ == test.__dict__
+
+    def __repr__(self):
+        return 'Test(%s)' % self.__dict__
+
 
 class TestException(Exception):
     def __init__(self, msg, test_id, callable, phase, exception, exc_info):

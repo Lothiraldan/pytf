@@ -13,6 +13,10 @@ class FakeModule(object):
         self.__name__ = 'fake_module'
 
 
+class LoaderMock(Mock):
+    level = 0
+
+
 def FunctionMock(Mock):
     def call(mock=Mock):
         mock()

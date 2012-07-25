@@ -6,15 +6,16 @@ from pytf.core import Test
 
 class TestLoader(object):
 
+    level = 0
+
     def load_object(self, obj, module):
         if inspect.isfunction(obj):
-            yield Test('id', obj)
+            return [Test('%s.%s' % (module.__name__, obj.__name__), obj)]
 
         if inspect.isclass(obj):
-            for test in self._gen_test_for_class(obj):
-                yield test
+            return self._gen_test_for_class(obj, module)
 
-    def _gen_test_for_class(self, klass):
+    def _gen_test_for_class(self, klass, module):
         has_set_up = False
         if hasattr(klass, 'setUp'):
             has_set_up = True
@@ -23,6 +24,7 @@ class TestLoader(object):
         if hasattr(klass, 'tearDown'):
             has_tear_down = True
 
+        tests = []
         for test_method_name in filter(lambda x: x.startswith('test'), dir(klass)):
 
             instance = klass()
@@ -39,17 +41,26 @@ class TestLoader(object):
             if has_tear_down:
                 tear_down_method = getattr(instance, 'tearDown')
 
-            test_id = 'test'
-            yield Test(test_id, test_method, set_up=set_up_method,
-                    tear_down=tear_down_method)
+            test_id = '%s.%s.%s' % (module.__name__, klass.__name__,
+                test_method_name)
+            tests.append(Test(test_id, test_method, set_up=set_up_method,
+                    tear_down=tear_down_method))
+        return tests
 
 
 # Unittest compatibility loader
 class UnittestLoader(TestLoader):
+
+    level = 10
+
     def load_object(self, klass, module):
+        if not inspect.isclass(klass):
+            return
+
         if not issubclass(klass, unittest.TestCase):
             return
 
+        tests = []
         for test_method_name in filter(lambda x: x.startswith('test'), dir(klass)):
 
             instance = klass(test_method_name)
@@ -62,6 +73,8 @@ class UnittestLoader(TestLoader):
 
             tear_down_method = getattr(instance, 'tearDown')
 
-            test_id = "%s.%s" % (module.__name__, klass.__name__)
-            yield Test(test_id, test_method, set_up=set_up_method,
-                    tear_down=tear_down_method)
+            test_id = "%s.%s.%s" % (module.__name__, klass.__name__,
+                test_method_name)
+            tests.append(Test(test_id, test_method, set_up=set_up_method,
+                    tear_down=tear_down_method))
+        return tests
