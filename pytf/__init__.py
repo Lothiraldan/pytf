@@ -46,8 +46,9 @@ class TestFinder(object):
 
 class TestExecutor(object):
 
-    def __init__(self, test_suite):
+    def __init__(self, test_suite, reporters = ()):
         self.test_suite = test_suite
+        self.reporters = reporters
 
     def execute(self):
         global_test_result = []
@@ -66,4 +67,8 @@ class TestExecutor(object):
 
             # Save test result
             global_test_result.append(test_result)
+
+            # TODO: Should be done in a thread??
+            for reporter in self.reporters:
+                reporter.show_result(test_result)
         return global_test_result

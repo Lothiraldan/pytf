@@ -8,6 +8,8 @@ except ImportError:
 
 from pytf import Test, TestException
 
+import traceback
+
 
 class TestTest(unittest.TestCase):
 
