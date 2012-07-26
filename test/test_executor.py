@@ -7,8 +7,6 @@ except ImportError:
 
 from pytf import TestExecutor, Test, TestException
 
-from utils import TestMock
-
 
 class TestTestExecutor(unittest.TestCase):
 

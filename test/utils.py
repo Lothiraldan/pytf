@@ -23,7 +23,7 @@ def FunctionMock(Mock):
     return call
 
 
-def TestMock(mock_test_id='test_id'):
+def MockTest(mock_test_id='test_id'):
     class TestMockClass(object):
         set_up_mock = Mock()
         test_mock = Mock()
@@ -41,7 +41,7 @@ def TestMock(mock_test_id='test_id'):
     return TestMockClass
 
 
-def TestMockMultipleTests():
+def MockMultipleTests():
     class TestMockClass(object):
 
         instances = []

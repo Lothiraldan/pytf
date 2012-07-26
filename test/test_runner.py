@@ -19,7 +19,7 @@ class TestTestRunner(unittest.TestCase):
 
     def setUp(self):
         self.module_object = sentinel.OBJECT
-        self.module = FakeModule({'obj': self.module_object})
+        self.module = FakeModule({'test': self.module_object})
 
     def test_set_loaders(self):
         loader1 = LoaderMock()
@@ -117,7 +117,7 @@ class TestTestRunner(unittest.TestCase):
 class TestTestRunnerFullChainTC(unittest.TestCase):
     def test_full_process(self):
         finders = [TestFinder(join(dirname(__file__),
-            'test_finder_dirs/test_full_chain/'))]
+            'finder_dirs/test_full_chain/'))]
         loaders = [TestLoader()]
         mock_reporter = Mock()
         reporters = [mock_reporter]

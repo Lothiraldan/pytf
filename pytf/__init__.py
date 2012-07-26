@@ -83,6 +83,10 @@ class TestRunner(object):
                 if var_name.startswith('_'):
                     continue
 
+                if not (var_name.startswith('test') or
+                    var_name.startswith('Test')):
+                    continue
+
                 for loader in self._iter_loaders(levels):
                     tests = loader.load_object(var, module)
 

@@ -7,14 +7,13 @@ except ImportError:
 
 from pytf import TestExecutor
 
-from utils import TestMock
-
+from utils import MockTest
 
 class TestReporterTC(unittest.TestCase):
 
     def test_one_test(self):
         reporters = [Mock()]
-        test_suite = [TestMock()]
+        test_suite = [MockTest()]
         executor = TestExecutor(reporters)
         executor.execute(test_suite)
 

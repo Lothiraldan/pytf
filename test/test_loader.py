@@ -6,7 +6,7 @@ except ImportError:
     from mock import Mock
 
 from pytf import TestLoader
-from utils import FunctionMock, TestMock, TestMockMultipleTests, FakeModule
+from utils import FunctionMock, MockTest, MockMultipleTests, FakeModule
 
 
 class TestLoaderTestCase(unittest.TestCase):
@@ -28,7 +28,7 @@ class TestLoaderTestCase(unittest.TestCase):
         self.assertTrue(mock.called)
 
     def test_simple_class(self):
-        fake_test_case = TestMock()
+        fake_test_case = MockTest()
         fake_module = FakeModule({})
 
         loader = TestLoader()
@@ -45,7 +45,7 @@ class TestLoaderTestCase(unittest.TestCase):
         self.assertTrue(fake_test_case.tear_down_mock.called)
 
     def test_instanciation(self):
-        fake_test_case = TestMockMultipleTests()
+        fake_test_case = MockMultipleTests()
 
         loader = TestLoader()
         test_suite = list(loader.load_object(fake_test_case, FakeModule({})))
