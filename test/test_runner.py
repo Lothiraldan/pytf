@@ -50,10 +50,6 @@ class TestTestRunner(unittest.TestCase):
                 [call(self.module_object, self.module)])
 
     def test_loaders_first_response(self):
-        '''Second loader should not been called has first loader always return
-        a test for each object of module
-        '''
-
         good_loader = LoaderMock()
         good_loader.load_object.return_value = [sentinel.TEST]
 
@@ -74,8 +70,6 @@ class TestTestRunner(unittest.TestCase):
         self.assertFalse(other_loader.load_object.called)
 
     def test_loaders_multiple_level(self):
-        '''Loader of level 0 should not been called
-        '''
 
         level1_loader = LoaderMock()
         level1_loader.load_object.return_value = [sentinel.TEST]

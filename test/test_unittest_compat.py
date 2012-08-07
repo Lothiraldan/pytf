@@ -24,6 +24,3 @@ class UnittestLoaderTestCase(unittest.TestCase):
         self.assertTrue(fake_test_case.set_up_mock.called)
         self.assertTrue(fake_test_case.test_mock.called)
         self.assertTrue(fake_test_case.tear_down_mock.called)
-
-if __name__ == "__main__":
-    unittest.main()

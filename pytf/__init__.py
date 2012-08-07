@@ -1,13 +1,17 @@
 import os
+import inspect
 
 from glob import iglob
 from os.path import join, relpath, splitext
 from importlib import import_module
 from collections import defaultdict
+from operator import methodcaller
 
 from pytf.loaders import TestLoader, UnittestLoader
 from pytf.core import Test, TestException
 from pytf.reporters import TextTestReporter
+
+__all__ = ['TestLoader', 'UnittestLoader', 'Test', 'TextTestReporter']
 
 
 class TestFinder(object):
@@ -32,6 +36,9 @@ class TestExecutor(object):
 
     def execute(self, test_suite):
         global_test_result = []
+        # Start reporters
+        map(methodcaller('begin_tests'), self.reporters)
+        # Run tests
         for test in test_suite:
             # Prepare test result
             test_result = {'test_id': test.test_id}
@@ -51,6 +58,8 @@ class TestExecutor(object):
             # TODO: Should be done in a thread??
             for reporter in self.reporters:
                 reporter.show_result(test_result)
+        # Stop reporters
+        map(methodcaller('end_tests'), self.reporters)
         return global_test_result
 
 
@@ -84,7 +93,7 @@ class TestRunner(object):
                     continue
 
                 if not (var_name.startswith('test') or
-                    var_name.startswith('Test')):
+                    var_name.startswith('Test')) and not inspect.isclass(var):
                     continue
 
                 for loader in self._iter_loaders(levels):
