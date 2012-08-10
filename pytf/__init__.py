@@ -2,10 +2,12 @@ import os
 import inspect
 
 from glob import iglob
+from contextlib import nested
 from os.path import join, relpath, splitext
 from importlib import import_module
 from collections import defaultdict
 from operator import methodcaller
+
 
 from pytf.loaders import TestLoader, UnittestLoader
 from pytf.core import Test, TestException
@@ -31,8 +33,9 @@ class TestFinder(object):
 
 class TestExecutor(object):
 
-    def __init__(self, reporters=()):
+    def __init__(self, reporters=(), contexts=()):
         self.reporters = reporters
+        self.contexts = contexts
 
     def execute(self, test_suite):
         global_test_result = []
@@ -43,6 +46,9 @@ class TestExecutor(object):
             # Prepare test result
             test_result = {'test_id': test.test_id}
 
+            # Call contexts
+            map(methodcaller('enter'), self.contexts)
+
             # Run test
             try:
                 test()
@@ -51,6 +57,12 @@ class TestExecutor(object):
                 test_result['exception'] = test_exception
             else:
                 test_result['success'] = True
+
+            # Call contexts end
+            for context in self.contexts:
+                context_result = context.exit(test_result)
+                if context_result:
+                    test_result.update(context_result)
 
             # Save test result
             global_test_result.append(test_result)
