@@ -17,5 +17,5 @@ class StdCatcher(object):
     def exit(self, test_result):
         sys.stdout = self.old_stdout
         sys.stderr = self.old_stderr
-        return {'messages': [('Captured stdout', self.stdout.getvalue()),
-            ('Captured stderr', self.stderr.getvalue())]}
+        test_result.add_message('Captured stdout', self.stdout.getvalue())
+        test_result.add_message('Captured stderr', self.stderr.getvalue())

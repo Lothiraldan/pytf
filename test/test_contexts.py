@@ -4,6 +4,7 @@ import sys
 import unittest
 
 from pytf.contexts import StdCatcher
+from pytf.core import TestResult
 
 class StdContextTest(unittest.TestCase):
 
@@ -13,11 +14,14 @@ class StdContextTest(unittest.TestCase):
         stdout_message = 'HI'
         stderr_message = 'Oups'
 
+        result = TestResult('test_id')
+
         std_catcher.enter()
         print(stdout_message)
         print(stderr_message, file=sys.stderr)
-        get = std_catcher.exit({})
+        std_catcher.exit(result)
 
-        expected = {'messages': [('Captured stdout', stdout_message + '\n'),
-            ('Captured stderr', stderr_message + '\n')]}
-        self.assertEqual(get, expected)
+        expected = [{'title': 'Captured stdout', 'message': stdout_message +
+            '\n'}, {'title': 'Captured stderr', 'message': stderr_message +
+            '\n'}]
+        self.assertEqual(result.messages, expected)
