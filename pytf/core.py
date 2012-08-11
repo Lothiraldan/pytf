@@ -1,5 +1,19 @@
 import sys
-import traceback
+
+
+class TestResult(object):
+
+    def __init__(self, test_id, exception=None):
+        self.test_id = test_id
+        if not exception:
+            self.success = True
+        else:
+            self.success = False
+        self.exception = exception
+        self.messages = []
+
+    def add_message(self, title, message):
+        self.messages.append({'title': title, 'message': message})
 
 
 class Test(object):
