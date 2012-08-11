@@ -15,6 +15,9 @@ class TestResult(object):
     def add_message(self, title, message):
         self.messages.append({'title': title, 'message': message})
 
+    def __cmp__(self, other):
+        return cmp(self.__dict__, other.__dict__)
+
 
 class Test(object):
 

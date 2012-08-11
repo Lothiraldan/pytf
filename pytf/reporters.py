@@ -23,10 +23,10 @@ class TextTestReporter(BaseReporter):
 
     def show_result(self, result):
         self.runs += 1
-        if result['success']:
+        if result.success:
             print('.', end='')
         else:
-            if result['exception'].phase == 'test':
+            if result.exception.phase == 'test':
                 print('F', end='')
                 self.failed.append(result)
             else:
@@ -47,8 +47,8 @@ class TextTestReporter(BaseReporter):
     def _print(self, name, results):
         for result in results:
             print("=" * 70)
-            print("{0}: {1}".format(name, result['test_id']))
+            print("{0}: {1}".format(name, result.test_id))
             print("-" * 70)
-            traceback.print_exception(*result['exception'].exc_info)
+            traceback.print_exception(*result.exception.exc_info)
             print("-" * 70)
             print("\n")

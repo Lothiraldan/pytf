@@ -10,7 +10,7 @@ from operator import methodcaller
 
 
 from pytf.loaders import TestLoader, UnittestLoader
-from pytf.core import Test, TestException
+from pytf.core import Test, TestException, TestResult
 from pytf.reporters import TextTestReporter
 
 __all__ = ['TestLoader', 'UnittestLoader', 'Test', 'TextTestReporter']
@@ -43,9 +43,6 @@ class TestExecutor(object):
         map(methodcaller('begin_tests'), self.reporters)
         # Run tests
         for test in test_suite:
-            # Prepare test result
-            test_result = {'test_id': test.test_id}
-
             # Call contexts
             map(methodcaller('enter'), self.contexts)
 
@@ -53,16 +50,13 @@ class TestExecutor(object):
             try:
                 test()
             except TestException as test_exception:
-                test_result['success'] = False
-                test_result['exception'] = test_exception
+                test_result = TestResult(test.test_id, test_exception)
             else:
-                test_result['success'] = True
+                test_result = TestResult(test.test_id)
 
             # Call contexts end
             for context in self.contexts:
-                context_result = context.exit(test_result)
-                if context_result:
-                    test_result.update(context_result)
+                context.exit(test_result)
 
             # Save test result
             global_test_result.append(test_result)

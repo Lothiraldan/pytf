@@ -26,8 +26,8 @@ class TestTestExecutor(unittest.TestCase):
         test_result = test_runner.execute(test_suite)
 
         self.assertEqual(len(test_result), 1)
-        self.assertEqual(test_result[0]['test_id'], test_suite[0].test_id)
-        self.assertEqual(test_result[0]['success'], True)
+        self.assertEqual(test_result[0].test_id, test_suite[0].test_id)
+        self.assertEqual(test_result[0].success, True)
 
     def test_simple_fail_result(self):
         test_suite = [Test('test_id', Mock(side_effect=Exception))]
@@ -36,9 +36,9 @@ class TestTestExecutor(unittest.TestCase):
         test_result = test_runner.execute(test_suite)
 
         self.assertEqual(len(test_result), 1)
-        self.assertEqual(test_result[0]['test_id'], test_suite[0].test_id)
-        self.assertEqual(test_result[0]['success'], False)
-        self.assertTrue(isinstance(test_result[0]['exception'], TestException))
+        self.assertEqual(test_result[0].test_id, test_suite[0].test_id)
+        self.assertEqual(test_result[0].success, False)
+        self.assertTrue(isinstance(test_result[0].exception, TestException))
 
     def test_contexts(self):
         test_suite = [Test('test_id', Mock())]
@@ -52,17 +52,22 @@ class TestTestExecutor(unittest.TestCase):
         self.assertEqual(context_mock.exit.call_args_list,
             [call(test_result[0])])
 
-    def test_contexts_update_result(self):
+    def test_contexts_add_message(self):
         test_suite = [Test('test_id', Mock())]
 
         context_mock = Mock()
-        context_mock.exit.return_value = {'additionnal': 'data'}
+        title = 'Title'
+        message = 'Message'
+        context_mock.exit.side_effect = lambda result: \
+            result.add_message(title, message)
+
         test_runner = TestExecutor(contexts=[context_mock])
         test_result = test_runner.execute(test_suite)
 
-        self.assertEqual(test_result[0]['test_id'], test_suite[0].test_id)
-        self.assertEqual(test_result[0]['success'], True)
-        self.assertEqual(test_result[0]['additionnal'], 'data')
+        self.assertEqual(test_result[0].test_id, test_suite[0].test_id)
+        self.assertEqual(test_result[0].success, True)
+        self.assertEqual(test_result[0].messages, [{'title': title,
+            'message': message}])
 
 
 if __name__ == "__main__":

@@ -6,8 +6,10 @@ except ImportError:
     from mock import Mock, call
 
 from pytf import TestExecutor
+from pytf.core import TestResult
 
 from utils import MockTest
+
 
 class TestReporterTC(unittest.TestCase):
 
@@ -17,8 +19,7 @@ class TestReporterTC(unittest.TestCase):
         executor = TestExecutor(reporters)
         executor.execute(test_suite)
 
-        report = {'test_id': test_suite[0].test_id, 'success': True}
-        expected_calls = [call(report)]
+        expected_calls = [call(TestResult(test_suite[0].test_id))]
         self.assertEquals(reporters[0].show_result.call_args_list,
             expected_calls)
 
