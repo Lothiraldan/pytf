@@ -12,6 +12,7 @@ from operator import methodcaller
 from pytf.loaders import TestLoader, UnittestLoader
 from pytf.core import Test, TestException, TestResult
 from pytf.reporters import TextTestReporter
+from pytf.contexts import StdCatcher
 
 __all__ = ['TestLoader', 'UnittestLoader', 'Test', 'TextTestReporter']
 
@@ -74,7 +75,8 @@ class TestRunner(object):
     def __init__(self, finders, loaders=None, executor=None):
         self.finders = finders
         if executor is None:
-            executor = TestExecutor([TextTestReporter()])
+            executor = TestExecutor([TextTestReporter()],
+                contexts=[StdCatcher()])
         self.executor = executor
 
         self.loaders = defaultdict(list)

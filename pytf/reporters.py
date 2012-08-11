@@ -51,4 +51,20 @@ class TextTestReporter(BaseReporter):
             print("-" * 70)
             traceback.print_exception(*result.exception.exc_info)
             print("-" * 70)
+            for message in result.messages:
+                print(self._center_padding_format(70, message['title']))
+                print(message['message'])
+                print("-" * 70)
             print("\n")
+
+    @staticmethod
+    def _center_padding_format(cols, string, padding_char='-'):
+        length = (cols - len(string)) / 2.
+
+        if length.is_integer():
+            # len(string) is #PAIR
+            return '{0}{1}{0}'.format(padding_char * length, string)
+        else:
+            data = (padding_char * (int(length) + 1), string,
+                padding_char * int(length))
+            return '{0}{1}{2}'.format(*data)
