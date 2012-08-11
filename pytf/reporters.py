@@ -61,19 +61,7 @@ class TextTestReporter(BaseReporter):
 
             for message in result.messages:
                 print(self.message_template.format(
-                    title=self._center_padding_format(70, message['title']),
+                    title='{:-^70}'.format(message['title']),
                     message=message['message'], single_dash=single_dash))
 
             print(self.foot_template.format(double_dash=double_dash))
-
-    @staticmethod
-    def _center_padding_format(cols, string, padding_char='-'):
-        length = (cols - len(string)) / 2.
-
-        if length.is_integer():
-            # len(string) is #PAIR
-            return '{0}{1}{0}'.format(padding_char * length, string)
-        else:
-            data = (padding_char * (int(length) + 1), string,
-                padding_char * int(length))
-            return '{0}{1}{2}'.format(*data)
