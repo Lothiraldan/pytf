@@ -1,9 +1,7 @@
 import os
 import inspect
 
-from glob import iglob
-from contextlib import nested
-from os.path import join, relpath, splitext
+from os.path import relpath, splitext
 from importlib import import_module
 from collections import defaultdict
 from operator import methodcaller
@@ -13,23 +11,9 @@ from pytf.loaders import TestLoader, UnittestLoader
 from pytf.core import Test, TestException, TestResult
 from pytf.reporters import TextTestReporter
 from pytf.contexts import StdCatcher
+from pytf.finders import TestFinder
 
 __all__ = ['TestLoader', 'UnittestLoader', 'Test', 'TextTestReporter']
-
-
-class TestFinder(object):
-
-    def __init__(self, path, pattern=None):
-        if pattern is None:
-            pattern = 'test*.py'
-        self.path = join(path, pattern)
-
-    def find(self):
-        for path in iglob(self.path):
-            if path.endswith('__init__.py'):
-                continue
-            else:
-                yield path
 
 
 class TestExecutor(object):
