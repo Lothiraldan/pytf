@@ -1,11 +1,12 @@
 import unittest
 
 try:
-    from unittest.mock import Mock
+    from unittest.mock import Mock, call
 except ImportError:
-    from mock import Mock
+    from mock import Mock, call
 
 from pytf import TestLoader
+from pytf.dataprovider import DataProviderLoader, DataProvider
 from utils import FunctionMock, MockTest, MockMultipleTests, FakeModule
 
 
@@ -62,6 +63,26 @@ class TestLoaderTestCase(unittest.TestCase):
         # avoid edge effect on tests
         self.assertEquals(len(fake_test_case.instances), 3)
         self.assertEquals(len(set(fake_test_case.instances)), 3)
+
+
+class DataProviderLoaderTestCase(unittest.TestCase):
+
+    def test_datas(self):
+        mock = Mock()
+        function_mock = FunctionMock(mock)
+
+        tests = [call(1, arg=2), call(2, arg=3), call(3, arg=4)]
+        function_mock = DataProvider(tests)(function_mock)
+
+        loader = DataProviderLoader()
+        test_suite = list(loader.load_object(function_mock, FakeModule({})))
+
+        self.assertEquals(len(test_suite), len(tests))
+
+        for test in test_suite:
+            test()
+
+        self.assertEquals(mock.call_args_list, tests)
 
 if __name__ == "__main__":
     unittest.main()

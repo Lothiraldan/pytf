@@ -18,8 +18,9 @@ class LoaderMock(Mock):
 
 
 def FunctionMock(Mock):
-    def call(mock=Mock):
-        mock()
+    def call(*args, **kwargs):
+        return call.mock(*args, **kwargs)
+    call.mock = Mock
     return call
 
 
