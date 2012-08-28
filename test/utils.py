@@ -34,8 +34,8 @@ def MockTest(mock_test_id='test_id'):
         def setUp(self):
             self.set_up_mock()
 
-        def test_test(self):
-            self.test_mock()
+        def test_test(self, *args, **kwargs):
+            self.test_mock(*args, **kwargs)
 
         def tearDown(self):
             self.tear_down_mock()

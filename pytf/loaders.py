@@ -39,13 +39,11 @@ class TestLoader(object):
         if not inspect.ismethod(test_method):
             return []
 
-        set_up_method = None
         if has_set_up:
-            set_up_method = getattr(instance, 'setUp')
+            set_up_method = getattr(instance, 'setUp', None)
 
-        tear_down_method = None
         if has_tear_down:
-            tear_down_method = getattr(instance, 'tearDown')
+            tear_down_method = getattr(instance, 'tearDown', None)
 
         test_id = '%s.%s.%s' % (module.__name__, klass.__name__,
             method_name)

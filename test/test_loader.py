@@ -67,12 +67,12 @@ class TestLoaderTestCase(unittest.TestCase):
 
 class DataProviderLoaderTestCase(unittest.TestCase):
 
-    def test_datas(self):
+    def test_data_provider_function(self):
         mock = Mock()
         function_mock = FunctionMock(mock)
 
         tests = [call(1, arg=2), call(2, arg=3), call(3, arg=4)]
-        function_mock = DataProvider(tests)(function_mock)
+        DataProvider(tests)(function_mock)
 
         loader = DataProviderLoader()
         test_suite = list(loader.load_object(function_mock, FakeModule({})))
@@ -83,6 +83,27 @@ class DataProviderLoaderTestCase(unittest.TestCase):
             test()
 
         self.assertEquals(mock.call_args_list, tests)
+
+    def test_data_provider_method(self):
+        fake_test_case = MockTest()
+        fake_module = FakeModule({})
+
+        tests = [call(1, arg=2), call(2, arg=3), call(3, arg=4)]
+        DataProvider(tests)(fake_test_case.__dict__['test_test'])
+
+        print fake_test_case.test_test.fixtures
+
+        loader = DataProviderLoader()
+        test_suite = list(loader.load_object(fake_test_case, fake_module))
+
+        self.assertEquals(len(test_suite), len(tests))
+
+        for test in test_suite:
+            test()
+
+        self.assertEquals(fake_test_case.set_up_mock.call_count, len(tests))
+        self.assertEquals(fake_test_case.test_mock.call_args_list, tests)
+        self.assertEquals(fake_test_case.tear_down_mock.call_count, len(tests))
 
 if __name__ == "__main__":
     unittest.main()
