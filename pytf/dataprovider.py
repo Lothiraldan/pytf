@@ -26,29 +26,41 @@ class DataProviderLoader(TestLoader):
                 partial(function, *fixture[1], **fixture[2]))
 
     def _load_method(self, klass, method_name, module, has_set_up,
-            has_tear_down):
-            instance = klass()
-            method = getattr(instance, method_name, None)
+        has_tear_down):
 
-            if not hasattr(method, 'fixtures'):
-                return []
+            method = getattr(klass(), method_name)
+            method_fixtures = getattr(method, 'fixtures', (None,))
 
             if not inspect.ismethod(method):
                 return []
 
             tests = []
-            for fixture in method.fixtures:
-                instance = klass()
 
-                if has_set_up:
-                    set_up_method = getattr(instance, 'setUp', None)
+            for instance in self._gen_instances(klass):
 
-                if has_tear_down:
-                    tear_down_method = getattr(instance, 'tearDown', None)
+                for fixture in method_fixtures:
 
-                test_id = '%s.%s.%s' % (module.__name__, klass.__name__,
-                    method_name)
-                tests.append(Test(test_id,
-                        partial(method, *fixture[1], **fixture[2]),
-                        set_up=set_up_method, tear_down=tear_down_method))
+                    method = getattr(instance, method_name)
+
+                    if has_set_up:
+                        set_up_method = getattr(instance, 'setUp', None)
+
+                    if has_tear_down:
+                        tear_down_method = getattr(instance, 'tearDown', None)
+
+                    test_id = '%s.%s.%s' % (module.__name__, klass.__name__,
+                        method_name)
+                    if fixture is None:
+                        tests.append(Test(test_id, method))
+                    else:
+                        tests.append(Test(test_id,
+                            partial(method, *fixture[1], **fixture[2]),
+                            set_up=set_up_method, tear_down=tear_down_method))
             return tests
+
+    def _gen_instances(self, klass):
+        if hasattr(klass, 'fixtures'):
+            for fixture in klass.fixtures:
+                yield klass(*fixture[1], **fixture[2])
+        else:
+            yield klass()

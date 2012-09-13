@@ -91,8 +91,6 @@ class DataProviderLoaderTestCase(unittest.TestCase):
         tests = [call(1, arg=2), call(2, arg=3), call(3, arg=4)]
         DataProvider(tests)(fake_test_case.__dict__['test_test'])
 
-        print fake_test_case.test_test.fixtures
-
         loader = DataProviderLoader()
         test_suite = list(loader.load_object(fake_test_case, fake_module))
 
@@ -104,6 +102,21 @@ class DataProviderLoaderTestCase(unittest.TestCase):
         self.assertEquals(fake_test_case.set_up_mock.call_count, len(tests))
         self.assertEquals(fake_test_case.test_mock.call_args_list, tests)
         self.assertEquals(fake_test_case.tear_down_mock.call_count, len(tests))
+
+    def test_data_provider_class(self):
+        fake_test_case = MockTest()
+        fake_module = FakeModule({})
+
+        tests = [call(1, arg=2), call(2, arg=3), call(3, arg=4)]
+        DataProvider(tests)(fake_test_case)
+
+        loader = DataProviderLoader()
+        test_suite = list(loader.load_object(fake_test_case, fake_module))
+
+        self.assertEquals(len(test_suite), len(tests))
+
+        for test in test_suite:
+            test()
 
 if __name__ == "__main__":
     unittest.main()

@@ -30,6 +30,10 @@ def MockTest(mock_test_id='test_id'):
         test_mock = Mock()
         tear_down_mock = Mock()
         test_id = mock_test_id
+        init_args = None
+
+        def __init__(self, *args, **kwargs):
+            self.init_args = (args, kwargs)
 
         def setUp(self):
             self.set_up_mock()
