@@ -54,7 +54,7 @@ class TestLoader(object):
 # Unittest compatibility loader
 class UnittestLoader(TestLoader):
 
-    level = 10
+    level = 20
 
     def load_object(self, klass, module):
         if not inspect.isclass(klass):

@@ -15,7 +15,7 @@ def DataProvider(fixtures):
 
 class DataProviderLoader(TestLoader):
 
-    level = 20
+    level = 10
 
     def _load_function(self, function, module):
         if not hasattr(function, 'fixtures'):
@@ -28,7 +28,7 @@ class DataProviderLoader(TestLoader):
     def _load_method(self, klass, method_name, module, has_set_up,
         has_tear_down):
 
-            method = getattr(klass(), method_name)
+            method = getattr(klass, method_name)
             method_fixtures = getattr(method, 'fixtures', (None,))
 
             if not inspect.ismethod(method):
@@ -42,11 +42,8 @@ class DataProviderLoader(TestLoader):
 
                     method = getattr(instance, method_name)
 
-                    if has_set_up:
-                        set_up_method = getattr(instance, 'setUp', None)
-
-                    if has_tear_down:
-                        tear_down_method = getattr(instance, 'tearDown', None)
+                    set_up_method = getattr(instance, 'setUp', None)
+                    tear_down_method = getattr(instance, 'tearDown', None)
 
                     test_id = '%s.%s.%s' % (module.__name__, klass.__name__,
                         method_name)

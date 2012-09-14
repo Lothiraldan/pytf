@@ -2,8 +2,9 @@
 import sys
 
 from pytf import TestFinder, TestRunner, TestLoader, UnittestLoader
+from pytf.dataprovider import DataProviderLoader
 
-loaders = [TestLoader(), UnittestLoader()]
+loaders = [DataProviderLoader(), TestLoader(), UnittestLoader()]
 
 runner = TestRunner([TestFinder(sys.argv[1])], loaders=loaders)
 runner.run()
