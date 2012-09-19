@@ -1,7 +1,6 @@
 import inspect
 
-from .loaders import TestLoader
-from .loaders import Test
+from .loaders import TestLoader, Test
 
 from functools import partial
 

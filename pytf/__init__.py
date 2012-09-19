@@ -40,8 +40,7 @@ class TestExecutor(object):
                 test_result = TestResult(test.test_id)
 
             # Call contexts end
-            for context in self.contexts:
-                context.exit(test_result)
+            map(methodcaller('exit', test_result), self.contexts)
 
             # Save test result
             global_test_result.append(test_result)
