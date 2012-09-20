@@ -26,6 +26,10 @@ class Test(object):
         self.callback = callback
         self.set_up = set_up
         self.tear_down = tear_down
+        self.messages = []
+
+    def add_message(self, title, message):
+        self.messages.append((title, message))
 
     def __call__(self):
         if self.set_up:

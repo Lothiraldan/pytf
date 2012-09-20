@@ -35,6 +35,14 @@ class TestTest(unittest.TestCase):
 
         self.assertTrue(tear_down_mock.called)
 
+    def test_message(self):
+        msg_title = 'Message'
+        msg_content = 'Content'
+
+        test = Test('id', Mock())
+        test.add_message(msg_title, msg_content)
+        self.assertEqual([(msg_title, msg_content)], list(test.messages))
+
 
 class TestTestException(unittest.TestCase):
 
