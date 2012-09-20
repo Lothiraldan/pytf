@@ -21,8 +21,10 @@ class DataProviderLoader(TestLoader):
             return
 
         for fixture in function.fixtures:
-            yield Test('%s.%s' % (module.__name__, function.__name__),
+            test = Test('%s.%s' % (module.__name__, function.__name__),
                 partial(function, *fixture[1], **fixture[2]))
+            test.add_message('DataProvider', (fixture[1], fixture[2]))
+            yield test
 
     def _load_method(self, klass, method_name, module, has_set_up,
         has_tear_down):
@@ -49,9 +51,12 @@ class DataProviderLoader(TestLoader):
                     if fixture is None:
                         tests.append(Test(test_id, method))
                     else:
-                        tests.append(Test(test_id,
+                        test = Test(test_id,
                             partial(method, *fixture[1], **fixture[2]),
-                            set_up=set_up_method, tear_down=tear_down_method))
+                            set_up=set_up_method, tear_down=tear_down_method)
+                        test.add_message('DataProvider',
+                            (fixture[1], fixture[2]))
+                        tests.append(test)
             return tests
 
     def _gen_instances(self, klass):
