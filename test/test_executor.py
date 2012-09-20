@@ -66,8 +66,7 @@ class TestTestExecutor(unittest.TestCase):
 
         self.assertEqual(test_result[0].test_id, test_suite[0].test_id)
         self.assertEqual(test_result[0].success, True)
-        self.assertEqual(test_result[0].messages, [{'title': title,
-            'message': message}])
+        self.assertEqual(test_result[0].messages, [(title, message)])
 
 
 if __name__ == "__main__":

@@ -13,7 +13,7 @@ class TestResult(object):
         self.messages = []
 
     def add_message(self, title, message):
-        self.messages.append({'title': title, 'message': message})
+        self.messages.append((title, message))
 
     def __cmp__(self, other):
         return cmp(self.__dict__, other.__dict__)

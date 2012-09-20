@@ -59,9 +59,9 @@ class TextTestReporter(BaseReporter):
 
             traceback.print_exception(*result.exception.exc_info)
 
-            for message in result.messages:
+            for title, message in result.messages:
                 print(self.message_template.format(
-                    title='{:-^70}'.format(message['title']),
-                    message=message['message'], single_dash=single_dash))
+                    title='{:-^70}'.format(title),
+                    message=message, single_dash=single_dash))
 
             print(self.foot_template.format(double_dash=double_dash))

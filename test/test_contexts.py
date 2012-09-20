@@ -22,9 +22,8 @@ class StdContextTest(unittest.TestCase):
         print(stderr_message, file=sys.stderr)
         std_catcher.exit(result)
 
-        expected = [{'title': 'Captured stdout', 'message': stdout_message +
-            '\n'}, {'title': 'Captured stderr', 'message': stderr_message +
-            '\n'}]
+        expected = [('Captured stdout', stdout_message + '\n'),
+            ('Captured stderr', stderr_message + '\n')]
         self.assertEqual(result.messages, expected)
 
     def test_empty_stdout(self):
@@ -38,8 +37,7 @@ class StdContextTest(unittest.TestCase):
         print(stdout_message)
         std_catcher.exit(result)
 
-        expected = [{'title': 'Captured stdout', 'message': stdout_message +
-            '\n'}]
+        expected = [('Captured stdout', stdout_message + '\n')]
         self.assertEqual(result.messages, expected)
 
     def test_empty_stderr(self):
@@ -53,6 +51,5 @@ class StdContextTest(unittest.TestCase):
         print(stderr_message, file=sys.stderr)
         std_catcher.exit(result)
 
-        expected = [{'title': 'Captured stderr', 'message': stderr_message +
-            '\n'}]
+        expected = [('Captured stderr', stderr_message + '\n')]
         self.assertEqual(result.messages, expected)

@@ -35,5 +35,4 @@ class TestResultTestCase(unittest.TestCase):
         message = 'Message'
         report.add_message(title, message)
 
-        self.assertEqual(list(report.messages), [{'title': title,
-            'message': message}])
+        self.assertEqual(list(report.messages), [(title, message)])
