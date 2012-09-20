@@ -13,6 +13,10 @@ class TestTestExecutor(unittest.TestCase):
     def test_simple(self):
         test_suite = [Mock() for i in xrange(3)]
 
+        # Create messages in order to match API
+        for test in test_suite:
+            test.messages = []
+
         test_runner = TestExecutor()
         test_runner.execute(test_suite)
 
@@ -66,6 +70,19 @@ class TestTestExecutor(unittest.TestCase):
 
         self.assertEqual(test_result[0].test_id, test_suite[0].test_id)
         self.assertEqual(test_result[0].success, True)
+        self.assertEqual(test_result[0].messages, [(title, message)])
+
+    def test_message_transmission(self):
+        title = 'title'
+        message = 'message'
+
+        test = Test('test_id', Mock())
+        test.add_message(title, message)
+
+        test_suite = [test]
+        test_runner = TestExecutor()
+        test_result = test_runner.execute(test_suite)
+
         self.assertEqual(test_result[0].messages, [(title, message)])
 
 

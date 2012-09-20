@@ -39,6 +39,9 @@ class TestExecutor(object):
             else:
                 test_result = TestResult(test.test_id)
 
+            # Add each test message
+            test_result.messages.extend(test.messages)
+
             # Call contexts end
             map(methodcaller('exit', test_result), self.contexts)
 

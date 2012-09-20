@@ -31,6 +31,7 @@ def MockTest(mock_test_id='test_id'):
         tear_down_mock = Mock()
         test_id = mock_test_id
         init_args = None
+        messages = []
 
         def __init__(self, *args, **kwargs):
             self.init_args = (args, kwargs)
