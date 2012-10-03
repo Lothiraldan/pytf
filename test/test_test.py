@@ -2,9 +2,9 @@ import unittest
 import inspect
 
 try:
-    from unittest.mock import Mock
+    from unittest.mock import Mock, call
 except ImportError:
-    from mock import Mock
+    from mock import Mock, call
 
 from pytf import Test, TestException
 
@@ -27,6 +27,19 @@ class TestTest(unittest.TestCase):
         test()
 
         self.assertTrue(setup_mock.called)
+
+    def test_setup_pass_the_result(self):
+        result = {'arg1': 'val1', 'arg2': 'val2'}
+
+        setup_mock = Mock()
+        setup_mock.pass_return_value = True
+        setup_mock.return_value = result
+        callback = Mock()
+        test = Test('id', callback, set_up=setup_mock)
+
+        test()
+
+        self.assertEqual(callback.call_args_list, [call(**result)])
 
     def test_multiple_setup(self):
         setup_mocks = [Mock(), Mock(), Mock()]
