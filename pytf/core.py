@@ -1,5 +1,7 @@
 import sys
 
+from collections import Iterable
+
 
 class TestResult(object):
 
@@ -24,7 +26,13 @@ class Test(object):
     def __init__(self, test_id, callback, set_up=None, tear_down=None):
         self.test_id = test_id
         self.callback = callback
+
+        if set_up and not isinstance(set_up, Iterable):
+            set_up = (set_up,)
         self.set_up = set_up
+
+        if tear_down and not isinstance(tear_down, Iterable):
+            tear_down = (tear_down,)
         self.tear_down = tear_down
         self.messages = []
 
@@ -33,17 +41,20 @@ class Test(object):
 
     def __call__(self):
         if self.set_up:
-            self._execute(self.set_up, 'set_up')
+            for set_up in self.set_up:
+                self._execute(set_up, 'set_up')
 
         self._execute(self.callback, 'test')
 
         if self.tear_down:
-            self._execute(self.tear_down, 'tear_down')
+            for tear_down in self.tear_down:
+                self._execute(tear_down, 'tear_down')
 
     def _execute(self, callback, phase):
         try:
             callback()
         except Exception as e:
+            print e
             raise TestException("Exception during %s" % phase, self.test_id,
                 callback, phase, e, sys.exc_info())
 

@@ -1,9 +1,9 @@
 import unittest
 
 try:
-    from unittest.mock import Mock
+    from unittest.mock import Mock, sentinel
 except ImportError:
-    from mock import Mock
+    from mock import Mock, sentinel
 
 
 class FakeModule(object):
@@ -93,3 +93,11 @@ def UnittestCaseMock():
         def tearDown(self):
             self.tear_down_mock()
     return UnittestCaseMockClass
+
+# Ressource
+
+
+def ressource_mock():
+    RessourceMock = Mock()
+    RessourceMock.set_up.return_value = sentinel.RESSOURCE
+    return RessourceMock

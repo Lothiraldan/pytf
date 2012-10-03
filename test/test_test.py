@@ -28,12 +28,28 @@ class TestTest(unittest.TestCase):
 
         self.assertTrue(setup_mock.called)
 
+    def test_multiple_setup(self):
+        setup_mocks = [Mock(), Mock(), Mock()]
+        test = Test('id', Mock(), set_up=setup_mocks)
+        test()
+
+        for mock in setup_mocks:
+            self.assertTrue(mock.called)
+
     def test_teardown(self):
         tear_down_mock = Mock()
         test = Test('id', Mock(), tear_down=tear_down_mock)
         test()
 
         self.assertTrue(tear_down_mock.called)
+
+    def test_multiple_teardown(self):
+        teardown_mocks = [Mock(), Mock(), Mock()]
+        test = Test('id', Mock(), tear_down=teardown_mocks)
+        test()
+
+        for mock in teardown_mocks:
+            self.assertTrue(mock.called)
 
     def test_message(self):
         msg_title = 'Message'
