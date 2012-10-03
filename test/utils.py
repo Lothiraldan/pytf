@@ -99,5 +99,5 @@ def UnittestCaseMock():
 
 def ressource_mock():
     RessourceMock = Mock()
-    RessourceMock.set_up.return_value = sentinel.RESSOURCE
+    RessourceMock.set_up.return_value = {'ressource': sentinel.RESSOURCE}
     return RessourceMock

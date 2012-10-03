@@ -204,7 +204,7 @@ class RessourceLoaderTestCase(unittest.TestCase):
 
         self.assertEquals(ressource.set_up.call_args_list, [call()])
         self.assertEquals(mock.call_args_list,
-            [call(ressource.set_up.return_value)])
+            [call(**ressource.set_up.return_value)])
         self.assertEquals(ressource.tear_down.call_args_list, [call()])
 
 
