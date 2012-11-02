@@ -1,9 +1,9 @@
 import unittest
 
 try:
-    from unittest.mock import Mock, call
+    from unittest.mock import Mock, call, sentinel
 except ImportError:
-    from mock import Mock, call
+    from mock import Mock, call, sentinel
 
 from tempfile import mkdtemp
 from os.path import join
@@ -14,7 +14,7 @@ from utils import (FunctionMock, MockTest, MockMultipleTests, FakeModule,
     ressource_mock)
 
 
-class TestLoaderTestCase(unittest.TestCase):
+class DefaultTestLoaderTestCase(unittest.TestCase):
 
     def test_simple_function(self):
         mock = Mock()
@@ -67,6 +67,22 @@ class TestLoaderTestCase(unittest.TestCase):
         # avoid edge effect on tests
         self.assertEquals(len(fake_test_case.instances), 3)
         self.assertEquals(len(set(fake_test_case.instances)), 3)
+
+
+class AdditionnalTestloaderTestCase(unittest.TestCase):
+
+    def test_with_function(self):
+        mock = Mock()
+        function_mock = FunctionMock(mock)
+
+        sample_loader = Mock()
+        sample_loader.load_function.return_value = [sentinel.LOADED_FUNCTION]
+        function_mock.loaders = [sample_loader]
+
+        loader = TestLoader()
+        test_suite = list(loader.load_object(function_mock, FakeModule({})))
+
+        self.assertEquals(test_suite, [sentinel.LOADED_FUNCTION])
 
 
 class DataProviderLoaderTestCase(unittest.TestCase):
