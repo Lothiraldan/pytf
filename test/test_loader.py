@@ -10,8 +10,6 @@ from os.path import join
 
 from pytf import TestLoader
 from pytf.dataprovider import DataProviderLoader, DataProvider
-from pytf.scenario import ScenarioTestCase, ScenarioLoader
-from pytf.ressources import RessourcesLoader, Ressources
 from utils import (FunctionMock, MockTest, MockMultipleTests, FakeModule,
     ressource_mock)
 
@@ -183,58 +181,6 @@ class DataProviderLoaderTestCase(unittest.TestCase):
         self.assertEquals(fake_test_case.set_up_mock.call_count, len(tests))
         self.assertEquals(fake_test_case.test_mock.call_args_list, tests)
         self.assertEquals(fake_test_case.tear_down_mock.call_count, len(tests))
-
-
-class RessourceLoaderTestCase(unittest.TestCase):
-
-    def test_ressource_function(self):
-        mock = Mock()
-        function_mock = FunctionMock(mock)
-
-        ressource = ressource_mock()
-        Ressources([ressource])(function_mock)
-
-        loader = RessourcesLoader()
-        test_suite = list(loader.load_object(function_mock, FakeModule({})))
-
-        self.assertEquals(len(test_suite), 1)
-
-        for test in test_suite:
-            test()
-
-        self.assertEquals(ressource.set_up.call_args_list, [call()])
-        self.assertEquals(mock.call_args_list,
-            [call(**ressource.set_up.return_value)])
-        self.assertEquals(ressource.tear_down.call_args_list, [call()])
-
-
-# class TestScenarioTestCase(unittest.TestCase):
-
-#     def setUp(self):
-
-#         class ScenarioTest(ScenarioTestCase):
-#             scenario_directory = mkdtemp()
-
-#             def test_scenario(self):
-#                 self.test_scenario()
-
-#         self.test_case = ScenarioTest()
-#         self.fake_module = FakeModule({})
-
-#         self.loader = ScenarioLoader()
-
-#     def test_one_scenario_file(self):
-
-#         with open(join(self.scenario_directory, 'test1.py'), 'w') as f:
-#             f.write('')
-
-#         test_suite = list(self.loader.load_object(self.test_case,
-#             self.fake_module))
-
-#         self.assertEquals(len(test_suite), 1)
-
-#         for test in test_suite:
-#             test()
 
 
 if __name__ == "__main__":
