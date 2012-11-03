@@ -89,3 +89,29 @@ class UnittestLoader(TestLoader):
             tests.append(Test(test_id, test_method, set_up=set_up_method,
                     tear_down=tear_down_method))
         return tests
+
+
+class TestGenerator(object):
+
+    def __init__(self, args=None, messages=None, set_ups=None,
+                 tear_downs=None):
+        self.args = args
+        self.messages = messages
+        self.set_ups = set_ups
+        self.tear_downs = tear_downs
+
+    @staticmethod
+    def merge(generators):
+        args = ([], {})
+        messages = []
+        set_ups = []
+        tear_downs = []
+
+        for generator in generators:
+            args[0].extend(generator.args[0])
+            args[1].update(generator.args[1])
+            messages.extend(generator.messages)
+            set_ups.extend(generator.set_ups)
+            tear_downs.extend(generator.tear_downs)
+
+        return TestGenerator(args, messages, set_ups, tear_downs)
