@@ -10,6 +10,7 @@ from os.path import join
 
 from pytf import TestLoader
 from pytf.dataprovider import DataProviderLoader, DataProvider
+from pytf.core import Test
 from utils import (FunctionMock, MockTest, MockMultipleTests, FakeModule,
     ressource_mock)
 
@@ -82,6 +83,14 @@ class AdditionnalTestloaderTestCase(unittest.TestCase):
         loader = TestLoader()
         test_suite = list(loader.load_object(function_mock, FakeModule({})))
 
+        # Check loader call
+        self.assertEquals(sample_loader.load_function.call_count, 1)
+        args = sample_loader.load_function.call_args_list[0]
+
+        self.assertTrue(isinstance(args[0][0], Test))
+        self.assertEquals(args[0][0].callback, function_mock)
+
+        # Check test suite
         self.assertEquals(test_suite, [sentinel.LOADED_FUNCTION])
 
 

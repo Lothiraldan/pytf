@@ -29,13 +29,15 @@ class TestLoader(object):
         return tests
 
     def _load_function(self, function, module):
+        test = Test('%s.%s' % (module.__name__, function.__name__), function)
+
         if hasattr(function, "loaders"):
             tests = []
             for loader in function.loaders:
-                tests.extend(loader.load_function(function, module))
+                tests.extend(loader.load_function(test))
             return tests
-
-        return [Test('%s.%s' % (module.__name__, function.__name__), function)]
+        else:
+            return [test]
 
     def _load_method(self, klass, method_name, module, has_set_up,
             has_tear_down):
