@@ -115,3 +115,10 @@ class TestGenerator(object):
             tear_downs.extend(generator.tear_downs)
 
         return TestGenerator(args, messages, set_ups, tear_downs)
+
+    def generate(self, test):
+        test.messages.extend(self.messages)
+        test.set_ups.extend(self.set_ups)
+        test.tear_downs.extend(self.tear_downs)
+        test.callback = partial(test.callback, *self.args[0], **self.args[1])
+        return test

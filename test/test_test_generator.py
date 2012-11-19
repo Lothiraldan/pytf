@@ -3,6 +3,7 @@ import unittest
 from mock import Mock
 
 from pytf.loaders import TestGenerator
+from pytf import Test
 
 
 class TestGeneratorTestCase(unittest.TestCase):
@@ -57,3 +58,30 @@ class TestGeneratorTestCase(unittest.TestCase):
             generator1_set_ups +  generator2_set_ups)
         self.assertEquals(merged_generator.tear_downs,
             generator1_tear_downs + generator2_tear_downs)
+
+    def test_generate(self):
+        # Generator
+        generator_args = ('arg11',), {'arg12': 42}
+        generator_messages = [('title11', 'msg11')]
+        generator_set_ups = [Mock(), Mock()]
+        generator_tear_downs = [Mock(), Mock()]
+        generator = TestGenerator(args=generator_args,
+            messages=generator_messages, set_ups=generator_set_ups,
+            tear_downs=generator_tear_downs)
+
+        # Base test
+        test_callback = Mock()
+        test = Test('sample', test_callback)
+
+        # Generate it
+        generator.generate(test)
+
+        # Call it and check it
+        test()
+
+        self.assertEqual(test_callback.call_args_list[0], generator_args)
+        for set_up in generator_set_ups:
+            self.assertEqual(set_up.call_count, 1)
+        for tear_down in generator_tear_downs:
+            self.assertEqual(tear_down.call_count, 1)
+        self.assertEqual(test.messages, generator_messages)
