@@ -53,7 +53,7 @@ class DataProviderLoader(TestLoader):
                     else:
                         test = Test(test_id,
                             partial(method, *fixture[1], **fixture[2]),
-                            set_up=set_up_method, tear_down=tear_down_method)
+                            set_ups=set_up_method, tear_downs=tear_down_method)
                         test.add_message('DataProvider',
                             (fixture[1], fixture[2]))
                         tests.append(test)

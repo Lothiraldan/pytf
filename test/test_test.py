@@ -23,7 +23,7 @@ class TestTest(unittest.TestCase):
 
     def test_setup(self):
         setup_mock = Mock()
-        test = Test('id', Mock(), set_up=setup_mock)
+        test = Test('id', Mock(), set_ups=setup_mock)
         test()
 
         self.assertTrue(setup_mock.called)
@@ -35,7 +35,7 @@ class TestTest(unittest.TestCase):
         setup_mock.pass_return_value = True
         setup_mock.return_value = result
         callback = Mock()
-        test = Test('id', callback, set_up=setup_mock)
+        test = Test('id', callback, set_ups=setup_mock)
 
         test()
 
@@ -43,7 +43,7 @@ class TestTest(unittest.TestCase):
 
     def test_multiple_setup(self):
         setup_mocks = [Mock(), Mock(), Mock()]
-        test = Test('id', Mock(), set_up=setup_mocks)
+        test = Test('id', Mock(), set_ups=setup_mocks)
         test()
 
         for mock in setup_mocks:
@@ -51,14 +51,14 @@ class TestTest(unittest.TestCase):
 
     def test_teardown(self):
         tear_down_mock = Mock()
-        test = Test('id', Mock(), tear_down=tear_down_mock)
+        test = Test('id', Mock(), tear_downs=tear_down_mock)
         test()
 
         self.assertTrue(tear_down_mock.called)
 
     def test_multiple_teardown(self):
         teardown_mocks = [Mock(), Mock(), Mock()]
-        test = Test('id', Mock(), tear_down=teardown_mocks)
+        test = Test('id', Mock(), tear_downs=teardown_mocks)
         test()
 
         for mock in teardown_mocks:
@@ -97,7 +97,7 @@ class TestTestException(unittest.TestCase):
         fail_set_up = Mock(side_effect=exception_class)
 
         test_id = 'failing_set_up'
-        test = Test(test_id, Mock(), set_up=fail_set_up)
+        test = Test(test_id, Mock(), set_ups=fail_set_up)
 
         with self.assertRaises(TestException) as exc:
             test()
@@ -114,7 +114,7 @@ class TestTestException(unittest.TestCase):
         fail_tear_down = Mock(side_effect=exception_class)
 
         test_id = 'failing_tear_down'
-        test = Test(test_id, Mock(), tear_down=fail_tear_down)
+        test = Test(test_id, Mock(), tear_downs=fail_tear_down)
 
         with self.assertRaises(TestException) as exc:
             test()

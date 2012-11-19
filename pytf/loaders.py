@@ -55,8 +55,8 @@ class TestLoader(object):
 
         test_id = '%s.%s.%s' % (module.__name__, klass.__name__,
             method_name)
-        return [Test(test_id, test_method, set_up=set_up_method,
-                tear_down=tear_down_method)]
+        return [Test(test_id, test_method, set_ups=set_up_method,
+                tear_downs=tear_down_method)]
 
 
 # Unittest compatibility loader
@@ -86,8 +86,8 @@ class UnittestLoader(TestLoader):
 
             test_id = "%s.%s.%s" % (module.__name__, klass.__name__,
                 test_method_name)
-            tests.append(Test(test_id, test_method, set_up=set_up_method,
-                    tear_down=tear_down_method))
+            tests.append(Test(test_id, test_method, set_ups=set_up_method,
+                    tear_downs=tear_down_method))
         return tests
 
 

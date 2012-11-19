@@ -23,17 +23,21 @@ class TestResult(object):
 
 class Test(object):
 
-    def __init__(self, test_id, callback, set_up=None, tear_down=None):
+    def __init__(self, test_id, callback, set_ups=None, tear_downs=None):
         self.test_id = test_id
         self.callback = callback
 
-        if set_up and not isinstance(set_up, Iterable):
-            set_up = (set_up,)
-        self.set_up = set_up
+        if set_ups and not isinstance(set_ups, Iterable):
+            set_ups = (set_ups,)
+        if set_ups is None:
+            set_ups = []
+        self.set_ups = set_ups
 
-        if tear_down and not isinstance(tear_down, Iterable):
-            tear_down = (tear_down,)
-        self.tear_down = tear_down
+        if tear_downs and not isinstance(tear_downs, Iterable):
+            tear_downs = (tear_downs,)
+        if tear_downs is None:
+            tear_downs = []
+        self.tear_downs = tear_downs
         self.messages = []
 
     def add_message(self, title, message):
@@ -41,8 +45,8 @@ class Test(object):
 
     def __call__(self):
         args = {}
-        if self.set_up:
-            for set_up in self.set_up:
+        if self.set_ups:
+            for set_up in self.set_ups:
                 return_value = self._execute(set_up, 'set_up')
 
                 if return_value and getattr(set_up, 'pass_return_value', False):
@@ -51,8 +55,8 @@ class Test(object):
 
         self._execute(self.callback, 'test', args)
 
-        if self.tear_down:
-            for tear_down in self.tear_down:
+        if self.tear_downs:
+            for tear_down in self.tear_downs:
                 self._execute(tear_down, 'tear_down')
 
     def _execute(self, callback, phase, args = None):
