@@ -5,6 +5,8 @@ try:
 except ImportError:
     from mock import Mock, sentinel
 
+from pytf.loaders import TestGenerator
+
 
 class FakeModule(object):
 
@@ -29,12 +31,12 @@ def MockTest(mock_test_id='test_id'):
         set_up_mock = Mock()
         test_mock = Mock()
         tear_down_mock = Mock()
+        init_mock = Mock()
         test_id = mock_test_id
-        init_args = None
         messages = []
 
         def __init__(self, *args, **kwargs):
-            self.init_args = (args, kwargs)
+            self.init_mock(*args, **kwargs)
 
         def setUp(self):
             self.set_up_mock()
@@ -94,8 +96,16 @@ def UnittestCaseMock():
             self.tear_down_mock()
     return UnittestCaseMockClass
 
-# Ressource
+def sample_test_generator():
+    generator_args = ('arg11',), {'arg12': 42}
+    generator_messages = [('title11', 'msg11')]
+    generator_set_ups = [Mock()]
+    generator_tear_downs = [Mock()]
+    return TestGenerator(args=generator_args,
+        messages=generator_messages, set_ups=generator_set_ups,
+        tear_downs=generator_tear_downs)
 
+# Ressource
 
 def ressource_mock():
     RessourceMock = Mock()

@@ -1,6 +1,9 @@
 import inspect
 import unittest
 
+from itertools import product
+from functools import partial
+
 from pytf.core import Test
 
 
@@ -13,7 +16,34 @@ class TestLoader(object):
             return self._load_function(obj, module)
 
         if inspect.isclass(obj):
-            return self._gen_test_for_class(obj, module)
+            return self._load_class(obj, module)
+
+    def _load_function(self, function, module):
+        test = Test('%s.%s' % (module.__name__, function.__name__), function)
+
+        if hasattr(function, "loaders"):
+            tests = []
+            generators = [loader.load_function(test) for loader in
+                function.loaders]
+            for combination in product(*generators):
+                generator = TestGenerator.merge(combination)
+                tests.append(generator.generate_test(test))
+            return tests
+        else:
+            return [test]
+
+    def _load_class(self, klass, module):
+        if hasattr(klass, 'loaders'):
+            generators = [loader.load_class(klass) for loader in
+                klass.loaders]
+            for combination in product(*generators):
+                generator = TestGenerator.merge(combination)
+                klass = generator.generate_klass(klass)
+                for test in self._gen_test_for_class(klass, module):
+                    yield test
+        else:
+            for test in self._gen_test_for_class(klass, module):
+                yield test
 
     def _gen_test_for_class(self, klass, module):
         has_set_up = hasattr(klass, 'setUp')
@@ -23,29 +53,18 @@ class TestLoader(object):
         for test_method_name in filter(lambda x: x.startswith('test'),
                 dir(klass)):
 
+            if not inspect.ismethod(getattr(klass, test_method_name)):
+                continue
+
             tests.extend(self._load_method(klass, test_method_name, module,
                 has_set_up, has_tear_down))
 
         return tests
 
-    def _load_function(self, function, module):
-        test = Test('%s.%s' % (module.__name__, function.__name__), function)
-
-        if hasattr(function, "loaders"):
-            tests = []
-            for loader in function.loaders:
-                tests.extend(loader.load_function(test))
-            return tests
-        else:
-            return [test]
-
     def _load_method(self, klass, method_name, module, has_set_up,
             has_tear_down):
         instance = klass()
         test_method = getattr(instance, method_name)
-
-        if not inspect.ismethod(test_method):
-            return []
 
         if has_set_up:
             set_up_method = getattr(instance, 'setUp', None)
@@ -91,6 +110,14 @@ class UnittestLoader(TestLoader):
         return tests
 
 
+def partial_init(f, *args, **kwargs):
+    def wrapped(self, *fargs, **fkwargs):
+        newkwargs = kwargs.copy()
+        newkwargs.update(fkwargs)
+        return f(self, *(args + fargs), **newkwargs)
+    return wrapped
+
+
 class TestGenerator(object):
 
     def __init__(self, args=None, messages=None, set_ups=None,
@@ -116,9 +143,17 @@ class TestGenerator(object):
 
         return TestGenerator(args, messages, set_ups, tear_downs)
 
-    def generate(self, test):
+    def generate_test(self, test):
         test.messages.extend(self.messages)
         test.set_ups.extend(self.set_ups)
         test.tear_downs.extend(self.tear_downs)
         test.callback = partial(test.callback, *self.args[0], **self.args[1])
         return test
+
+    def generate_klass(self, klass):
+        klass.messages = self.messages
+        klass.set_ups = self.set_ups
+        klass.tear_downs = self.tear_downs
+        klass.__init__ = partial_init(klass.__init__, *self.args[0],
+            **self.args[1])
+        return klass

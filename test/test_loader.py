@@ -12,8 +12,9 @@ from os.path import join
 from pytf import TestLoader
 from pytf.dataprovider import DataProviderLoader, DataProvider
 from pytf.core import Test
+from pytf.loaders import TestGenerator
 from utils import (FunctionMock, MockTest, MockMultipleTests, FakeModule,
-    ressource_mock)
+    ressource_mock, sample_test_generator)
 
 
 class DefaultTestLoaderTestCase(unittest.TestCase):
@@ -78,21 +79,44 @@ class AdditionnalTestloaderTestCase(unittest.TestCase):
         function_mock = FunctionMock(mock)
 
         sample_loader = Mock()
-        sample_loader.load_function.return_value = [sentinel.LOADED_FUNCTION]
+        test_generator = sample_test_generator()
+        sample_loader.load_function.return_value = [test_generator]
         function_mock.loaders = [sample_loader]
 
         loader = TestLoader()
         test_suite = list(loader.load_object(function_mock, FakeModule({})))
 
+        # Call test
+        test_suite[0]()
+
         # Check loader call
         self.assertEquals(sample_loader.load_function.call_count, 1)
-        args = sample_loader.load_function.call_args_list[0]
-
+        args = sample_loader.load_function.call_args
         self.assertTrue(isinstance(args[0][0], Test))
-        self.assertEquals(args[0][0].callback, function_mock)
 
-        # Check test suite
-        self.assertEquals(test_suite, [sentinel.LOADED_FUNCTION])
+        # Check test
+        self.assertEqual(mock.call_args, test_generator.args)
+        self.assertEqual(test_generator.set_ups[0].call_count, 1)
+        self.assertEqual(test_generator.tear_downs[0].call_count, 1)
+        self.assertEqual(test_suite[0].messages, test_generator.messages)
+
+    def test_with_class(self):
+        fake_test_case = MockTest()
+        fake_module = FakeModule({})
+
+        sample_loader = Mock()
+        test_generator = sample_test_generator()
+        sample_loader.load_class.return_value = [test_generator]
+        fake_test_case.loaders = [sample_loader]
+
+        loader = TestLoader()
+        test_suite = list(loader.load_object(fake_test_case, fake_module))
+
+        self.assertEquals(len(test_suite), 1)
+
+        self.assertEqual(fake_test_case.init_mock.call_count, 1)
+        self.assertEqual(fake_test_case.init_mock.call_args,
+            test_generator.args)
 
 
 class DataProviderLoaderTestCase(unittest.TestCase):

@@ -74,7 +74,7 @@ class TestGeneratorTestCase(unittest.TestCase):
         test = Test('sample', test_callback)
 
         # Generate it
-        generator.generate(test)
+        generator.generate_test(test)
 
         # Call it and check it
         test()
