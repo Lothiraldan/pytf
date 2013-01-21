@@ -1,4 +1,3 @@
-import sys
 import unittest
 
 try:
@@ -6,15 +5,11 @@ try:
 except ImportError:
     from mock import Mock, call, sentinel
 
-from tempfile import mkdtemp
-from os.path import join
-
 from pytf import TestLoader
 from pytf.dataprovider import DataProviderLoader, DataProvider
 from pytf.core import Test
-from pytf.loaders import TestGenerator
 from utils import (FunctionMock, MockTest, MockMultipleTests, FakeModule,
-    ressource_mock, sample_test_generator)
+    sample_test_generator)
 
 
 class DefaultTestLoaderTestCase(unittest.TestCase):
