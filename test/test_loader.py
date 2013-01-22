@@ -113,6 +113,32 @@ class AdditionnalTestloaderTestCase(unittest.TestCase):
         self.assertEqual(fake_test_case.init_mock.call_args,
             test_generator.args)
 
+    def test_with_test_method(self):
+        fake_test_case = MockTest()
+        fake_module = FakeModule({})
+
+        sample_loader = Mock()
+        test_generator = sample_test_generator()
+        sample_loader.load_method.return_value = [test_generator]
+        # Simulate method decorator
+        fake_test_case.test_test.im_func.loaders = [sample_loader]
+
+        loader = TestLoader()
+        test_suite = list(loader.load_object(fake_test_case, fake_module))
+
+        self.assertEquals(len(test_suite), 1)
+
+        # Call test
+        test_suite[0]()
+
+        # Check calls
+        self.assertEqual(fake_test_case.test_mock.call_count, 1)
+        self.assertEqual(fake_test_case.test_mock.call_args,
+            test_generator.args)
+        self.assertEqual(test_generator.set_ups[0].call_count, 1)
+        self.assertEqual(test_generator.tear_downs[0].call_count, 1)
+        self.assertEqual(test_suite[0].messages, test_generator.messages)
+
 
 class DataProviderLoaderTestCase(unittest.TestCase):
 

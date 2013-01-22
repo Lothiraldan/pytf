@@ -28,13 +28,13 @@ class Test(object):
         self.callback = callback
 
         if set_ups and not isinstance(set_ups, Iterable):
-            set_ups = (set_ups,)
+            set_ups = [set_ups]
         if set_ups is None:
             set_ups = []
         self.set_ups = set_ups
 
         if tear_downs and not isinstance(tear_downs, Iterable):
-            tear_downs = (tear_downs,)
+            tear_downs = [tear_downs]
         if tear_downs is None:
             tear_downs = []
         self.tear_downs = tear_downs

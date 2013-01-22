@@ -46,36 +46,35 @@ class TestLoader(object):
                 yield test
 
     def _gen_test_for_class(self, klass, module):
-        has_set_up = hasattr(klass, 'setUp')
-        has_tear_down = hasattr(klass, 'tearDown')
-
-        tests = []
         for test_method_name in filter(lambda x: x.startswith('test'),
                 dir(klass)):
 
             if not inspect.ismethod(getattr(klass, test_method_name)):
                 continue
 
-            tests.extend(self._load_method(klass, test_method_name, module,
-                has_set_up, has_tear_down))
+            for test in self._load_method(klass, test_method_name, module):
+                yield test
 
-        return tests
-
-    def _load_method(self, klass, method_name, module, has_set_up,
-            has_tear_down):
+    def _load_method(self, klass, method_name, module):
         instance = klass()
         test_method = getattr(instance, method_name)
 
-        if has_set_up:
-            set_up_method = getattr(instance, 'setUp', None)
-
-        if has_tear_down:
-            tear_down_method = getattr(instance, 'tearDown', None)
+        set_up_method = getattr(instance, 'setUp', None)
+        tear_down_method = getattr(instance, 'tearDown', None)
 
         test_id = '%s.%s.%s' % (module.__name__, klass.__name__,
             method_name)
-        return [Test(test_id, test_method, set_ups=set_up_method,
-                tear_downs=tear_down_method)]
+        test = Test(test_id, test_method, set_ups=set_up_method,
+                tear_downs=tear_down_method)
+
+        if hasattr(test_method, 'loaders'):
+            generators = [loader.load_method(test) for loader in
+                test_method.loaders]
+            for combination in product(*generators):
+                generator = TestGenerator.merge(combination)
+                yield generator.generate_test(test)
+        else:
+            yield test
 
 
 # Unittest compatibility loader

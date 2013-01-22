@@ -26,8 +26,7 @@ class DataProviderLoader(TestLoader):
             test.add_message('DataProvider', (fixture[1], fixture[2]))
             yield test
 
-    def _load_method(self, klass, method_name, module, has_set_up,
-        has_tear_down):
+    def _load_method(self, klass, method_name, module):
 
         method = getattr(klass, method_name)
         method_fixtures = getattr(method, 'fixtures', (None,))
