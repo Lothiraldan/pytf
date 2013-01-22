@@ -22,15 +22,13 @@ class TestLoader(object):
         test = Test('%s.%s' % (module.__name__, function.__name__), function)
 
         if hasattr(function, "loaders"):
-            tests = []
             generators = [loader.load_function(test) for loader in
                 function.loaders]
             for combination in product(*generators):
                 generator = TestGenerator.merge(combination)
-                tests.append(generator.generate_test(test))
-            return tests
+                yield generator.generate_test(test)
         else:
-            return [test]
+            yield test
 
     def _load_class(self, klass, module):
         if hasattr(klass, 'loaders'):
