@@ -44,27 +44,19 @@ class Test(object):
         self.messages.append((title, message))
 
     def __call__(self):
-        args = {}
         if self.set_ups:
             for set_up in self.set_ups:
-                return_value = self._execute(set_up, 'set_up')
+                self._execute(set_up, 'set_up')
 
-                if return_value and getattr(set_up, 'pass_return_value', False):
-                    if isinstance(return_value, Mapping):
-                        args.update(return_value)
-
-        self._execute(self.callback, 'test', args)
+        self._execute(self.callback, 'test')
 
         if self.tear_downs:
             for tear_down in self.tear_downs:
                 self._execute(tear_down, 'tear_down')
 
-    def _execute(self, callback, phase, args = None):
+    def _execute(self, callback, phase):
         try:
-            if args:
-                return callback(**args)
-            else:
-                return callback()
+            callback()
         except Exception as e:
             raise TestException("Exception during %s" % phase, self.test_id,
                 callback, phase, e, sys.exc_info())
