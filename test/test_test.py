@@ -71,7 +71,7 @@ class TestTestException(unittest.TestCase):
             test()
 
         exc = exc.exception
-        self.assertEqual(exc.test_id, test_id)
+        self.assertEqual(exc.id, test_id)
         self.assertEqual(exc.phase, 'test')
         self.assertEqual(exc.callable, fail_test)
         self.assertEqual(exc.exc_info[0], exception_class)
@@ -88,7 +88,7 @@ class TestTestException(unittest.TestCase):
             test()
 
         exc = exc.exception
-        self.assertEqual(exc.test_id, test_id)
+        self.assertEqual(exc.id, test_id)
         self.assertEqual(exc.phase, 'set_up')
         self.assertEqual(exc.callable, fail_set_up)
         self.assertEqual(exc.exc_info[0], exception_class)
@@ -105,7 +105,7 @@ class TestTestException(unittest.TestCase):
             test()
 
         exc = exc.exception
-        self.assertEqual(exc.test_id, test_id)
+        self.assertEqual(exc.id, test_id)
         self.assertEqual(exc.phase, 'tear_down')
         self.assertEqual(exc.callable, fail_tear_down)
         self.assertEqual(exc.exc_info[0], exception_class)

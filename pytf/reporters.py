@@ -15,7 +15,7 @@ class BaseReporter(object):
 
 class TextTestReporter(BaseReporter):
 
-    head_template = '{double_dash}\n{name}: {test_id}\n{single_dash}\n'
+    head_template = '{double_dash}\n{name}: {id}\n{single_dash}\n'
     message_template = '{title}\n{message}\n{single_dash}'
     foot_template = '{double_dash}\n'
 
@@ -55,7 +55,7 @@ class TextTestReporter(BaseReporter):
 
             print(self.head_template.format(double_dash=double_dash,
                 single_dash=single_dash, name=name,
-                test_id=result.test_id))
+                id=result.id))
 
             traceback.print_exception(*result.exception.exc_info)
 

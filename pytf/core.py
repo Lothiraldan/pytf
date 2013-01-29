@@ -6,7 +6,7 @@ from collections import Iterable, Mapping
 class TestResult(object):
 
     def __init__(self, test_id, exception=None):
-        self.test_id = test_id
+        self.id = test_id
         if not exception:
             self.success = True
         else:
@@ -24,7 +24,7 @@ class TestResult(object):
 class Test(object):
 
     def __init__(self, test_id, callback, set_ups=None, tear_downs=None):
-        self.test_id = test_id
+        self.id = test_id
         self.callback = callback
 
         if set_ups and not isinstance(set_ups, Iterable):
@@ -58,7 +58,7 @@ class Test(object):
         try:
             callback()
         except Exception as e:
-            raise TestException("Exception during %s" % phase, self.test_id,
+            raise TestException("Exception during %s" % phase, self.id,
                 callback, phase, e, sys.exc_info())
 
     def __eq__(self, test):
@@ -71,7 +71,7 @@ class Test(object):
 class TestException(Exception):
     def __init__(self, msg, test_id, callable, phase, exception, exc_info):
         super(TestException, self).__init__(self, msg)
-        self.test_id = test_id
+        self.id = test_id
         self.callable = callable
         self.phase = phase
         self.exception = exception

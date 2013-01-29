@@ -117,8 +117,9 @@ def partial_init(f, *args, **kwargs):
 
 class TestGenerator(object):
 
-    def __init__(self, args=None, messages=None, set_ups=None,
+    def __init__(self, test_id, args=None, messages=None, set_ups=None,
                  tear_downs=None):
+        self.id = test_id
         self.args = args
         self.messages = messages
         self.set_ups = set_ups
@@ -126,21 +127,25 @@ class TestGenerator(object):
 
     @staticmethod
     def merge(generators):
+        test_ids = []
         args = ([], {})
         messages = []
         set_ups = []
         tear_downs = []
 
         for generator in generators:
+            test_ids.append(generator.id)
             args[0].extend(generator.args[0])
             args[1].update(generator.args[1])
             messages.extend(generator.messages)
             set_ups.extend(generator.set_ups)
             tear_downs.extend(generator.tear_downs)
 
-        return TestGenerator(args, messages, set_ups, tear_downs)
+        return TestGenerator('.'.join(test_ids), args, messages, set_ups,
+            tear_downs)
 
     def generate_test(self, test):
+        test.id += '.' + self.id
         test.messages.extend(self.messages)
         test.set_ups.extend(self.set_ups)
         test.tear_downs.extend(self.tear_downs)

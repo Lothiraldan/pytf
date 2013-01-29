@@ -9,63 +9,72 @@ from pytf import Test
 class TestGeneratorTestCase(unittest.TestCase):
 
     def test_constructor(self):
+        test_id = 'test'
+        generator = TestGenerator(test_id)
+        self.assertEqual(generator.id, test_id)
+
         # Arguments
         args = ('arg1', 'arg2'), {'arg3': 10, 'arg4': 20}
-        generator = TestGenerator(args=args)
+        generator = TestGenerator(test_id, args=args)
         self.assertEqual(generator.args, args)
 
         # Messages
         messages = [('title', 'message'), ('title2', 'message2')]
-        generator = TestGenerator(messages=messages)
+        generator = TestGenerator(test_id, messages=messages)
         self.assertEqual(generator.messages, messages)
 
         # Set_up
         set_ups = [Mock(), Mock()]
-        generator = TestGenerator(set_ups=set_ups)
+        generator = TestGenerator(test_id, set_ups=set_ups)
         self.assertEqual(generator.set_ups, set_ups)
 
         # Tear down
         tear_downs = [Mock(), Mock()]
-        generator = TestGenerator(tear_downs=tear_downs)
+        generator = TestGenerator(test_id, tear_downs=tear_downs)
         self.assertEqual(generator.tear_downs, tear_downs)
 
     def test_merge(self):
         # Generator 1
+        generator1_id = 'test_id1'
         generator1_args = ('arg11',), {'arg12': 42}
         generator1_messages = [('title11', 'msg11')]
         generator1_set_ups = [Mock(), Mock()]
         generator1_tear_downs = [Mock(), Mock()]
-        generator1 = TestGenerator(args=generator1_args,
+        generator1 = TestGenerator(generator1_id, args=generator1_args,
             messages=generator1_messages, set_ups=generator1_set_ups,
             tear_downs=generator1_tear_downs)
 
         # Generator 2
+        generator2_id = 'test_id2'
         generator2_args = ('arg21',), {'arg22': 42}
         generator2_messages = [('title21', 'msg21')]
         generator2_set_ups = [Mock(), Mock()]
         generator2_tear_downs = [Mock(), Mock()]
-        generator2 = TestGenerator(args=generator2_args,
+        generator2 = TestGenerator(generator2_id, args=generator2_args,
             messages=generator2_messages, set_ups=generator2_set_ups,
             tear_downs=generator2_tear_downs)
 
         # Merge generator
         merged_generator = TestGenerator.merge((generator1, generator2))
         merged_args = ['arg11', 'arg21'], {'arg12': 42, 'arg22': 42}
+        self.assertEquals(merged_generator.id,
+            '.'.join((generator1_id, generator2_id)))
         self.assertEquals(merged_generator.args, merged_args)
         self.assertEquals(merged_generator.messages,
             generator1_messages + generator2_messages)
         self.assertEquals(merged_generator.set_ups,
-            generator1_set_ups +  generator2_set_ups)
+            generator1_set_ups + generator2_set_ups)
         self.assertEquals(merged_generator.tear_downs,
             generator1_tear_downs + generator2_tear_downs)
 
-    def test_generate(self):
+    def test_generate_test(self):
         # Generator
+        test_id = 'generator'
         generator_args = ('arg11',), {'arg12': 42}
         generator_messages = [('title11', 'msg11')]
         generator_set_ups = [Mock(), Mock()]
         generator_tear_downs = [Mock(), Mock()]
-        generator = TestGenerator(args=generator_args,
+        generator = TestGenerator(test_id, args=generator_args,
             messages=generator_messages, set_ups=generator_set_ups,
             tear_downs=generator_tear_downs)
 
@@ -79,6 +88,7 @@ class TestGeneratorTestCase(unittest.TestCase):
         # Call it and check it
         test()
 
+        self.assertEqual(test.id, '.'.join(('sample', test_id)))
         self.assertEqual(test_callback.call_args_list[0], generator_args)
         for set_up in generator_set_ups:
             self.assertEqual(set_up.call_count, 1)

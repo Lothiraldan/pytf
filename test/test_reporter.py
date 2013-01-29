@@ -19,7 +19,7 @@ class TestReporterTC(unittest.TestCase):
         executor = TestExecutor(reporters)
         executor.execute(test_suite)
 
-        expected_calls = [call(TestResult(test_suite[0].test_id))]
+        expected_calls = [call(TestResult(test_suite[0].id))]
         self.assertEquals(reporters[0].show_result.call_args_list,
             expected_calls)
 

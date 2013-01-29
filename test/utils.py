@@ -32,7 +32,7 @@ def MockTest(mock_test_id='test_id'):
         test_mock = Mock()
         tear_down_mock = Mock()
         init_mock = Mock()
-        test_id = mock_test_id
+        id = mock_test_id
         messages = []
 
         def __init__(self, *args, **kwargs):
@@ -101,7 +101,7 @@ def sample_test_generator():
     generator_messages = [('title11', 'msg11')]
     generator_set_ups = [Mock()]
     generator_tear_downs = [Mock()]
-    return TestGenerator(args=generator_args,
+    return TestGenerator('sample_test_generator', args=generator_args,
         messages=generator_messages, set_ups=generator_set_ups,
         tear_downs=generator_tear_downs)
 

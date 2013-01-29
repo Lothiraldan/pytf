@@ -25,7 +25,7 @@ class DefaultTestLoaderTestCase(unittest.TestCase):
         self.assertEquals(len(test_suite), 1)
         test_suite[0]()
 
-        self.assertEquals(test_suite[0].test_id, '%s.%s' %
+        self.assertEquals(test_suite[0].id, '%s.%s' %
             (fake_module.__name__, function_mock.__name__))
 
         self.assertTrue(mock.called)
@@ -40,7 +40,7 @@ class DefaultTestLoaderTestCase(unittest.TestCase):
         self.assertEquals(len(test_suite), 1)
         test_suite[0]()
 
-        self.assertEquals(test_suite[0].test_id, '%s.%s.%s' %
+        self.assertEquals(test_suite[0].id, '%s.%s.%s' %
             (fake_module.__name__, fake_test_case.__name__, 'test_test'))
 
         self.assertTrue(fake_test_case.set_up_mock.called)

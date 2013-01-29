@@ -14,7 +14,7 @@ class TestResultTestCase(unittest.TestCase):
         test_id = 'some_test'
         report = TestResult(test_id)
 
-        self.assertEqual(report.test_id, test_id)
+        self.assertEqual(report.id, test_id)
         self.assertEqual(report.success, True)
 
     def test_failed_test(self):
@@ -22,7 +22,7 @@ class TestResultTestCase(unittest.TestCase):
             test = Test('test_id', Mock(side_effect=Exception))
             test()
 
-        report = TestResult(test.test_id, cm.exception)
+        report = TestResult(test.id, cm.exception)
 
         self.assertEqual(report.success, False)
         self.assertEqual(report.exception, cm.exception)

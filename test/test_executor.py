@@ -30,7 +30,7 @@ class TestTestExecutor(unittest.TestCase):
         test_result = test_runner.execute(test_suite)
 
         self.assertEqual(len(test_result), 1)
-        self.assertEqual(test_result[0].test_id, test_suite[0].test_id)
+        self.assertEqual(test_result[0].id, test_suite[0].id)
         self.assertEqual(test_result[0].success, True)
 
     def test_simple_fail_result(self):
@@ -40,7 +40,7 @@ class TestTestExecutor(unittest.TestCase):
         test_result = test_runner.execute(test_suite)
 
         self.assertEqual(len(test_result), 1)
-        self.assertEqual(test_result[0].test_id, test_suite[0].test_id)
+        self.assertEqual(test_result[0].id, test_suite[0].id)
         self.assertEqual(test_result[0].success, False)
         self.assertTrue(isinstance(test_result[0].exception, TestException))
 
@@ -68,7 +68,7 @@ class TestTestExecutor(unittest.TestCase):
         test_runner = TestExecutor(contexts=[context_mock])
         test_result = test_runner.execute(test_suite)
 
-        self.assertEqual(test_result[0].test_id, test_suite[0].test_id)
+        self.assertEqual(test_result[0].id, test_suite[0].id)
         self.assertEqual(test_result[0].success, True)
         self.assertEqual(test_result[0].messages, [(title, message)])
 

@@ -17,7 +17,7 @@ class UnittestLoaderTestCase(unittest.TestCase):
         self.assertEquals(len(test_suite), 1)
         test_suite[0]()
 
-        self.assertEquals(test_suite[0].test_id,
+        self.assertEquals(test_suite[0].id,
             '%s.%s.%s' % (fake_module.__name__, fake_test_case.__name__,
             'test_test'))
 

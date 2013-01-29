@@ -35,9 +35,9 @@ class TestExecutor(object):
             try:
                 test()
             except TestException as test_exception:
-                test_result = TestResult(test.test_id, test_exception)
+                test_result = TestResult(test.id, test_exception)
             else:
-                test_result = TestResult(test.test_id)
+                test_result = TestResult(test.id)
 
             # Add each test message
             test_result.messages.extend(test.messages)
