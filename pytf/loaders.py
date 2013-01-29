@@ -36,7 +36,7 @@ class TestLoader(object):
                 klass.loaders]
             for combination in product(*generators):
                 generator = TestGenerator.merge(combination)
-                klass = generator.generate_klass(klass)
+                klass = generator.generate_class(klass)
                 for test in self._gen_test_for_class(klass, module):
                     yield test
         else:
@@ -152,7 +152,8 @@ class TestGenerator(object):
         test.callback = partial(test.callback, *self.args[0], **self.args[1])
         return test
 
-    def generate_klass(self, klass):
+    def generate_class(self, klass):
+        klass.id = self.id
         klass.messages = self.messages
         klass.set_ups = self.set_ups
         klass.tear_downs = self.tear_downs

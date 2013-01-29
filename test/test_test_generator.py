@@ -95,3 +95,33 @@ class TestGeneratorTestCase(unittest.TestCase):
         for tear_down in generator_tear_downs:
             self.assertEqual(tear_down.call_count, 1)
         self.assertEqual(test.messages, generator_messages)
+
+    def test_generate_class(self):
+        # Generator
+        test_id = 'generator'
+        generator_args = ('arg11',), {'arg12': 42}
+        generator_messages = [('title11', 'msg11')]
+        generator_set_ups = [Mock(), Mock()]
+        generator_tear_downs = [Mock(), Mock()]
+        generator = TestGenerator(test_id, args=generator_args,
+            messages=generator_messages, set_ups=generator_set_ups,
+            tear_downs=generator_tear_downs)
+
+        # Base test
+        class TestClass(object):
+            init_mock = Mock()
+
+            def __init__(self, *args, **kwargs):
+                self.init_mock(*args, **kwargs)
+
+        # Generate it
+        generator.generate_class(TestClass)
+
+        # Call it and check it
+        TestClass()
+
+        self.assertEqual(TestClass.id, test_id)
+        self.assertEqual(TestClass.init_mock.call_args_list[0], generator_args)
+        self.assertEqual(TestClass.set_ups, generator_set_ups)
+        self.assertEqual(TestClass.tear_downs, generator_tear_downs)
+        self.assertEqual(TestClass.messages, generator_messages)
