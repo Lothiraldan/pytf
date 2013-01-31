@@ -1,5 +1,7 @@
 import unittest
 
+from copy import copy
+
 from mock import Mock
 
 from pytf.loaders import TestGenerator
@@ -86,20 +88,24 @@ class TestGeneratorTestCase(unittest.TestCase):
         # Base test
         test_callback = Mock()
         test = Test('sample', test_callback)
+        test_copy = copy(test)
 
         # Generate it
-        generator.generate_test(test)
+        generated_test = generator.generate_test(test)
 
         # Call it and check it
-        test()
+        generated_test()
 
-        self.assertEqual(test.id, '.'.join(('sample', test_id)))
+        self.assertEqual(generated_test.id, '.'.join(('sample', test_id)))
         self.assertEqual(test_callback.call_args_list[0], generator_args)
         for set_up in generator_set_ups:
             self.assertEqual(set_up.call_count, 1)
         for tear_down in generator_tear_downs:
             self.assertEqual(tear_down.call_count, 1)
-        self.assertEqual(test.messages, generator_messages)
+        self.assertEqual(generated_test.messages, generator_messages)
+
+        # Check that test has not been modified
+        self.assertEqual(test, test_copy)
 
     def test_generate_class(self):
         # Generator
@@ -119,14 +125,21 @@ class TestGeneratorTestCase(unittest.TestCase):
             def __init__(self, *args, **kwargs):
                 self.init_mock(*args, **kwargs)
 
+        self.assertFalse(hasattr(TestClass, 'id'))
+
         # Generate it
-        generator.generate_class(TestClass)
+        generated_class = generator.generate_class(TestClass)
 
         # Call it and check it
-        TestClass()
+        generated_class()
 
-        self.assertEqual(TestClass.id, test_id)
-        self.assertEqual(TestClass.init_mock.call_args_list[0], generator_args)
-        self.assertEqual(TestClass.set_ups, generator_set_ups)
-        self.assertEqual(TestClass.tear_downs, generator_tear_downs)
-        self.assertEqual(TestClass.messages, generator_messages)
+        self.assertEqual(generated_class.id, test_id)
+        self.assertEqual(generated_class.init_mock.call_args_list[0],
+            generator_args)
+        self.assertEqual(generated_class.set_ups, generator_set_ups)
+        self.assertEqual(generated_class.tear_downs, generator_tear_downs)
+        self.assertEqual(generated_class.messages, generator_messages)
+
+        # Check that initial class is not modified, so initial class should
+        # not have an id attribute
+        self.assertFalse(hasattr(TestClass, 'id'))

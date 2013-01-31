@@ -157,18 +157,26 @@ class TestGenerator(object):
             tear_downs)
 
     def generate_test(self, test):
-        test.id += '.' + self.id
-        test.messages.extend(self.messages)
-        test.set_ups.extend(self.set_ups)
-        test.tear_downs.extend(self.tear_downs)
-        test.callback = partial(test.callback, *self.args[0], **self.args[1])
-        return test
+        test_id = test.id + '.' + self.id
+        test_messages = test.messages + self.messages
+        test_set_ups = test.set_ups + self.set_ups
+        test_tear_downs = test.tear_downs + self.tear_downs
+        test_callback = partial(test.callback, *self.args[0], **self.args[1])
+
+        generated_test = Test(test_id, test_callback, test_set_ups,
+            test_tear_downs)
+        for message_title, message_content in test_messages:
+            generated_test.add_message(message_title, message_content)
+        return generated_test
 
     def generate_class(self, klass):
-        klass.id = self.id
-        klass.messages = self.messages
-        klass.set_ups = self.set_ups
-        klass.tear_downs = self.tear_downs
-        klass.__init__ = partial_init(klass.__init__, *self.args[0],
-            **self.args[1])
-        return klass
+        # Generate a copy of initial klass with same name
+        generated_klass = type(klass.__name__, klass.__bases__,
+            dict(klass.__dict__))
+        generated_klass.id = self.id
+        generated_klass.messages = self.messages
+        generated_klass.set_ups = self.set_ups
+        generated_klass.tear_downs = self.tear_downs
+        generated_klass.__init__ = partial_init(generated_klass.__init__,
+            *self.args[0], **self.args[1])
+        return generated_klass
