@@ -120,9 +120,21 @@ class TestGenerator(object):
     def __init__(self, test_id, args=None, messages=None, set_ups=None,
                  tear_downs=None):
         self.id = test_id
+
+        if args is None:
+            args = ((), {})
         self.args = args
+
+        if messages is None:
+            messages = []
         self.messages = messages
+
+        if set_ups is None:
+            set_ups = []
         self.set_ups = set_ups
+
+        if tear_downs is None:
+            tear_downs = []
         self.tear_downs = tear_downs
 
     @staticmethod

@@ -9,9 +9,14 @@ from pytf import Test
 class TestGeneratorTestCase(unittest.TestCase):
 
     def test_constructor(self):
+        # Base
         test_id = 'test'
         generator = TestGenerator(test_id)
         self.assertEqual(generator.id, test_id)
+        self.assertEqual(generator.args, ((), {}))
+        self.assertEqual(generator.messages, [])
+        self.assertEqual(generator.set_ups, [])
+        self.assertEqual(generator.tear_downs, [])
 
         # Arguments
         args = ('arg1', 'arg2'), {'arg3': 10, 'arg4': 20}
