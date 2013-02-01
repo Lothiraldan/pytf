@@ -36,8 +36,8 @@ class TestLoader(object):
                 klass.loaders]
             for combination in product(*generators):
                 generator = TestGenerator.merge(combination)
-                klass = generator.generate_class(klass)
-                for test in self._gen_test_for_class(klass, module):
+                generated_klass = generator.generate_class(klass)
+                for test in self._gen_test_for_class(generated_klass, module):
                     yield test
         else:
             for test in self._gen_test_for_class(klass, module):

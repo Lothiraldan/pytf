@@ -1,12 +1,11 @@
 import unittest
 
 try:
-    from unittest.mock import Mock, call, sentinel
+    from unittest.mock import Mock
 except ImportError:
-    from mock import Mock, call, sentinel
+    from mock import Mock
 
 from pytf import TestLoader
-from pytf.dataprovider import DataProviderLoader, DataProvider
 from pytf.core import Test
 from utils import (FunctionMock, MockTest, MockMultipleTests, FakeModule,
     sample_test_generator)
@@ -138,120 +137,6 @@ class AdditionnalTestloaderTestCase(unittest.TestCase):
         self.assertEqual(test_generator.set_ups[0].call_count, 1)
         self.assertEqual(test_generator.tear_downs[0].call_count, 1)
         self.assertEqual(test_suite[0].messages, test_generator.messages)
-
-
-class DataProviderLoaderTestCase(unittest.TestCase):
-
-    def test_data_provider_function(self):
-        mock = Mock()
-        function_mock = FunctionMock(mock)
-
-        tests = [call(1, arg=2), call(2, arg=3), call(3, arg=4)]
-        DataProvider(tests)(function_mock)
-
-        loader = DataProviderLoader()
-        test_suite = list(loader.load_object(function_mock, FakeModule({})))
-
-        self.assertEquals(len(test_suite), len(tests))
-
-        for test in test_suite:
-            test()
-
-        self.assertEquals(mock.call_args_list, tests)
-
-    def test_data_provider_method(self):
-        fake_test_case = MockTest()
-        fake_module = FakeModule({})
-
-        tests = [call(1, arg=2), call(2, arg=3), call(3, arg=4)]
-        DataProvider(tests)(fake_test_case.__dict__['test_test'])
-
-        loader = DataProviderLoader()
-        test_suite = list(loader.load_object(fake_test_case, fake_module))
-
-        self.assertEquals(len(test_suite), len(tests))
-
-        for test in test_suite:
-            test()
-
-        self.assertEquals(fake_test_case.set_up_mock.call_count, len(tests))
-        self.assertEquals(fake_test_case.test_mock.call_args_list, tests)
-        self.assertEquals(fake_test_case.tear_down_mock.call_count, len(tests))
-
-    def test_data_provider_class(self):
-        fake_test_case = MockTest()
-        fake_module = FakeModule({})
-
-        tests = [call(1, arg=2), call(2, arg=3), call(3, arg=4)]
-        DataProvider(tests)(fake_test_case)
-
-        loader = DataProviderLoader()
-        test_suite = list(loader.load_object(fake_test_case, fake_module))
-
-        self.assertEquals(len(test_suite), len(tests))
-
-        for test in test_suite:
-            test()
-
-    def test_data_provider_class_and_method(self):
-        fake_test_case = MockTest()
-        fake_module = FakeModule({})
-
-        class_tests = [call(1, arg=2), call(2, arg=3), call(3, arg=4)]
-        DataProvider(class_tests)(fake_test_case)
-
-        method_tests = [call(4, arg=5), call(5, arg=6), call(6, arg=7)]
-        DataProvider(method_tests)(fake_test_case.__dict__['test_test'])
-
-        loader = DataProviderLoader()
-        test_suite = list(loader.load_object(fake_test_case, fake_module))
-
-        self.assertEquals(len(test_suite), len(class_tests) * len(method_tests))
-
-        for test in test_suite:
-            test()
-
-    def test_data_provider_function_messages(self):
-        mock = Mock()
-        function_mock = FunctionMock(mock)
-
-        tests = [call(1, arg=2), call(2, arg=3), call(3, arg=4)]
-        DataProvider(tests)(function_mock)
-
-        loader = DataProviderLoader()
-        test_suite = list(loader.load_object(function_mock, FakeModule({})))
-
-        self.assertEquals(len(test_suite), len(tests))
-
-        for test_number, test in enumerate(test_suite):
-            test_call = tests[test_number]
-            self.assertEquals(test.messages, [('DataProvider',
-                (test_call[1], test_call[2]))])
-            test()
-
-        self.assertEquals(mock.call_args_list, tests)
-
-    def test_data_provider_method_messages(self):
-        fake_test_case = MockTest()
-        fake_module = FakeModule({})
-
-        tests = [call(1, arg=2), call(2, arg=3), call(3, arg=4)]
-        DataProvider(tests)(fake_test_case.__dict__['test_test'])
-
-        loader = DataProviderLoader()
-        test_suite = list(loader.load_object(fake_test_case, fake_module))
-
-        self.assertEquals(len(test_suite), len(tests))
-
-        for test_number, test in enumerate(test_suite):
-            test_call = tests[test_number]
-            self.assertEquals(test.messages, [('DataProvider',
-                (test_call[1], test_call[2]))])
-            test()
-
-        self.assertEquals(fake_test_case.set_up_mock.call_count, len(tests))
-        self.assertEquals(fake_test_case.test_mock.call_args_list, tests)
-        self.assertEquals(fake_test_case.tear_down_mock.call_count, len(tests))
 
 
 if __name__ == "__main__":

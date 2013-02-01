@@ -1,66 +1,40 @@
-import inspect
-
-from .loaders import TestLoader, Test
-
-from functools import partial
+from .loaders import TestGenerator
 
 
-def DataProvider(fixtures):
+def call(*args, **kwargs):
+    return args, kwargs
+
+
+def DataProvider(**datas):
     def wrapper(func):
-        func.fixtures = fixtures
+        generator = DataProviderGenerator(datas)
+        loaders = getattr(func, 'loaders', [])
+        loaders.append(generator)
+        func.loaders = loaders
         return func
     return wrapper
 
 
-class DataProviderLoader(TestLoader):
+class DataProviderGenerator(object):
 
-    level = 10
+    def __init__(self, calls):
+        self.calls = calls
 
-    def _load_function(self, function, module):
-        if not hasattr(function, 'fixtures'):
-            return
+    def load_function(self, function):
+        return self._gen_generators(function, 'function')
 
-        for fixture in function.fixtures:
-            test = Test('%s.%s' % (module.__name__, function.__name__),
-                partial(function, *fixture[1], **fixture[2]))
-            test.add_message('DataProvider', (fixture[1], fixture[2]))
-            yield test
+    def load_method(self, method):
+        return self._gen_generators(method, 'method')
 
-    def _load_method(self, klass, method_name, module):
+    def load_class(self, klass):
+        return self._gen_generators(klass, 'class')
 
-        method = getattr(klass, method_name)
-        method_fixtures = getattr(method, 'fixtures', (None,))
-
-        if not inspect.ismethod(method):
-            return []
-
-        tests = []
-
-        for instance in self._gen_instances(klass):
-
-            for fixture in method_fixtures:
-
-                method = getattr(instance, method_name)
-
-                set_up_method = getattr(instance, 'setUp', None)
-                tear_down_method = getattr(instance, 'tearDown', None)
-
-                test_id = '%s.%s.%s' % (module.__name__, klass.__name__,
-                    method_name)
-                if fixture is None:
-                    tests.append(Test(test_id, method))
-                else:
-                    test = Test(test_id,
-                        partial(method, *fixture[1], **fixture[2]),
-                        set_ups=set_up_method, tear_downs=tear_down_method)
-                    test.add_message('DataProvider',
-                        (fixture[1], fixture[2]))
-                    tests.append(test)
-        return tests
-
-    def _gen_instances(self, klass):
-        if hasattr(klass, 'fixtures'):
-            for fixture in klass.fixtures:
-                yield klass(*fixture[1], **fixture[2])
-        else:
-            yield klass()
+    def _gen_generators(self, test_callback, type):
+        generators = []
+        for call_name, call_args in self.calls.items():
+            message = '%s has been called with: %s' % (type.capitalize(),
+                call_args,)
+            generator = TestGenerator(call_name, args=call_args,
+                messages=[('Call args', message)])
+            generators.append(generator)
+        return generators

@@ -1,6 +1,6 @@
 import sys
 
-from collections import Iterable, Mapping
+from collections import Iterable
 
 
 class TestResult(object):
