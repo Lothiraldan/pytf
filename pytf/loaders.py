@@ -60,8 +60,13 @@ class TestLoader(object):
         set_up_method = getattr(instance, 'setUp', None)
         tear_down_method = getattr(instance, 'tearDown', None)
 
-        test_id = '%s.%s.%s' % (module.__name__, klass.__name__,
-            method_name)
+        test_ids = [module.__name__, klass.__name__]
+        if hasattr(klass, 'id'):
+            test_ids.append(klass.id)
+        test_ids.append(method_name)
+
+        test_id = '.'.join(test_ids)
+
         test = Test(test_id, test_method, set_ups=set_up_method,
                 tear_downs=tear_down_method)
 

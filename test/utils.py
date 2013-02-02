@@ -95,12 +95,12 @@ def UnittestCaseMock():
             self.tear_down_mock()
     return UnittestCaseMockClass
 
-def sample_test_generator():
+def sample_test_generator(id='sample_test_generator'):
     generator_args = ('arg11',), {'arg12': 42}
     generator_messages = [('title11', 'msg11')]
     generator_set_ups = [Mock()]
     generator_tear_downs = [Mock()]
-    return TestGenerator('sample_test_generator', args=generator_args,
+    return TestGenerator(id, args=generator_args,
         messages=generator_messages, set_ups=generator_set_ups,
         tear_downs=generator_tear_downs)
 

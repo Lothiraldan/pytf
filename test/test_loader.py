@@ -138,6 +138,29 @@ class AdditionnalTestloaderTestCase(unittest.TestCase):
         self.assertEqual(test_generator.tear_downs[0].call_count, 1)
         self.assertEqual(test_suite[0].messages, test_generator.messages)
 
+    def test_with_class_and_test_method(self):
+        fake_test_case = MockTest()
+        fake_module = FakeModule({})
+
+        sample_loader = Mock()
+        sample_loader.load_method.return_value = [sample_test_generator('method_generator')]
+        sample_loader.load_class.return_value = [sample_test_generator('class_generator')]
+
+        fake_test_case.loaders = [sample_loader]
+        # Simulate method decorator
+        fake_test_case.test_test.im_func.loaders = [sample_loader]
+
+        loader = TestLoader()
+        test_suite = list(loader.load_object(fake_test_case, fake_module))
+
+        self.assertEquals(len(test_suite), 1)
+
+        test = test_suite[0]
+        test()
+
+        # Check id
+        self.assertIn('class_generator', test.id)
+
 
 if __name__ == "__main__":
     unittest.main()

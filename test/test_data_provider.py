@@ -25,8 +25,9 @@ class DataProviderTestCase(unittest.TestCase):
 
         self.assertEquals(len(test_suite), len(tests))
 
-        for test in test_suite:
+        for test_number, test in enumerate(test_suite):
             test()
+            self.assertTrue(test.id.endswith(tests.keys()[test_number]))
 
         self.assertEquals(mock.call_args_list, tests.values())
 
@@ -43,8 +44,9 @@ class DataProviderTestCase(unittest.TestCase):
 
         self.assertEquals(len(test_suite), len(tests))
 
-        for test in test_suite:
+        for test_number, test in enumerate(test_suite):
             test()
+            self.assertTrue(test.id.endswith(tests.keys()[test_number]))
 
         self.assertEquals(fake_test_case.set_up_mock.call_count, len(tests))
         self.assertEquals(fake_test_case.test_mock.call_args_list, tests.values())
@@ -63,8 +65,12 @@ class DataProviderTestCase(unittest.TestCase):
 
         self.assertEquals(len(test_suite), len(tests))
 
-        for test in test_suite:
+        for test_number, test in enumerate(test_suite):
             test()
+            self.assertIn(tests.keys()[test_number], test.id)
+
+        self.assertEqual(fake_test_case.init_mock.call_args_list,
+            tests.values())
 
     def test_data_provider_class_and_method(self):
         fake_test_case = MockTest()
@@ -83,8 +89,13 @@ class DataProviderTestCase(unittest.TestCase):
 
         self.assertEquals(len(test_suite), len(class_tests) * len(method_tests))
 
-        for test in test_suite:
+        for test_number, test in enumerate(test_suite):
             test()
+            self.assertIn(class_tests.keys()[test_number/3], test.id)
+            self.assertTrue(test.id.endswith(method_tests.keys()[(test_number%3)]))
+
+        self.assertEqual(fake_test_case.init_mock.call_args_list,
+            class_tests.values())
 
     def test_data_provider_function_messages(self):
         mock = Mock()
