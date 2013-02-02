@@ -171,18 +171,19 @@ class CallGeneratorTestCase(unittest.TestCase):
         fake_test_case = MockTest()
         fake_module = FakeModule({})
 
-        tests = {'call1': call(1, arg=2), 'call2': call(2, arg=3), 'call3':
-            call(3, arg=4)}
-        DataProvider(**tests)(fake_test_case.__dict__['test_test'])
+        arg_name = 'arg'
+        test_args = {'call1': 1, 'call2': 2, 'call3': 3}
+        CallGenerator(arg_name, **test_args)(fake_test_case.__dict__['test_test'])
 
         loader = TestLoader()
         test_suite = list(loader.load_object(fake_test_case, fake_module))
 
-        self.assertEquals(len(test_suite), len(tests))
+        self.assertEquals(len(test_suite), len(test_args))
 
         for test in test_suite:
             test()
 
-        self.assertEquals(fake_test_case.set_up_mock.call_count, len(tests))
-        self.assertEquals(fake_test_case.test_mock.call_args_list, tests.values())
-        self.assertEquals(fake_test_case.tear_down_mock.call_count, len(tests))
+        self.assertEquals(fake_test_case.set_up_mock.call_count, len(test_args))
+        expected = [call(**{arg_name: x}) for x in test_args.values()]
+        self.assertEquals(fake_test_case.test_mock.call_args_list, expected)
+        self.assertEquals(fake_test_case.tear_down_mock.call_count, len(test_args))

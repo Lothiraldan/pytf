@@ -59,6 +59,9 @@ class _CallGenerator(object):
     def load_function(self, function):
         return self._gen_generators(function, 'function')
 
+    def load_method(self, function):
+        return self._gen_generators(function, 'method')
+
     def _gen_generators(self, test_callback, type):
         generators = []
         for call_name, arg_value in self.arg_values.items():
