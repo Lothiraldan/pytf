@@ -6,16 +6,14 @@ except ImportError:
     from mock import Mock, call
 
 from pytf import TestExecutor
-from pytf.core import TestResult
-
-from utils import MockTest
+from pytf.core import TestResult, Test
 
 
 class TestReporterTC(unittest.TestCase):
 
     def test_one_test(self):
         reporters = [Mock()]
-        test_suite = [MockTest()]
+        test_suite = [Test('sample_test', lambda: None)]
         executor = TestExecutor(reporters)
         executor.execute(test_suite)
 
@@ -25,7 +23,7 @@ class TestReporterTC(unittest.TestCase):
 
     def test_begin_end(self):
         reporters = [Mock()]
-        test_suite = [MockTest()]
+        test_suite = [Test('sample_test', lambda: None)]
         executor = TestExecutor(reporters)
         executor.execute(test_suite)
 
