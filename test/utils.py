@@ -26,13 +26,12 @@ def FunctionMock(Mock):
     return call
 
 
-def MockTest(mock_test_id='test_id'):
+def MockTest():
     class TestMockClass(object):
         set_up_mock = Mock()
         test_mock = Mock()
         tear_down_mock = Mock()
         init_mock = Mock()
-        id = mock_test_id
         messages = []
 
         def __init__(self, *args, **kwargs):
