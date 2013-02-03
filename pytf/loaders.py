@@ -70,6 +70,10 @@ class TestLoader(object):
         test = Test(test_id, test_method, set_ups=set_up_method,
                 tear_downs=tear_down_method)
 
+        if hasattr(instance, 'messages'):
+            for msg in instance.messages:
+                test.add_message(*msg)
+
         if hasattr(test_method, 'loaders'):
             generators = [loader.load_method(test) for loader in
                 test_method.loaders]
