@@ -9,7 +9,7 @@ from operator import methodcaller
 
 from pytf.loaders import TestLoader, UnittestLoader
 from pytf.core import Test, TestException, TestResult
-from pytf.reporters import TextTestReporter
+from pytf.reporters import TextTestReporter, EarlyTextReporter
 from pytf.contexts import StdCatcher
 from pytf.finders import TestFinder
 
