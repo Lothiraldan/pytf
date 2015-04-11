@@ -104,6 +104,14 @@ class EarlyTextReporter(TextTestReporter):
 
     success_template = '{status}: {id}\n'
 
+    head_template = '\t{double_dash}\n\t{status}: {id}\n\t{single_dash}\n'
+    message_template = '\t{title}\n\t{message}\n\t{single_dash}\n'
+    message_foot_template = '\t{double_dash}\n'
+    foot_template = '{status}: Ran {total} tests in {duration:.3f}s, ' \
+                    '{failing} failing tests and {errors} ' \
+                    'tests in errors\n'
+    start_template = 'Starting tests\n\n'
+
     def show_result(self, result):
         self.runs += 1
         if result.success:
