@@ -55,18 +55,19 @@ class TextTestReporter(BaseReporter):
 
         self._print_results('ERROR', self.errors)
         self._print_results('FAILED', self.failed)
-        self._print_results('DEPENDENCIES', self.dependencies)
+        self._print_results('DEPENDENCY', self.dependencies,
+                            print_exception=False)
 
         print('')
 
         self._print_footer()
 
 
-    def _print_results(self, status, results):
+    def _print_results(self, status, results, **kwargs):
         for result in results:
-            self._print_failing_test(status, result)
+            self._print_failing_test(status, result, **kwargs)
 
-    def _print_failing_test(self, status, result):
+    def _print_failing_test(self, status, result, print_exception=True):
         double_dash = '=' * 70
         single_dash = '-' * 70
 
@@ -74,12 +75,13 @@ class TextTestReporter(BaseReporter):
             single_dash=single_dash, status=status,
             id=result.id)
 
-        traceback.print_exception(*result.exception.exc_info)
+        if print_exception:
+            traceback.print_exception(*result.exception.exc_info)
 
-        for title, message in result.messages:
-            self._print_tpl(self.message_template,
-                title='{:-^70}'.format(title),
-                message=message, single_dash=single_dash)
+            for title, message in result.messages:
+                self._print_tpl(self.message_template,
+                    title='{:-^70}'.format(title),
+                    message=message, single_dash=single_dash)
 
         self._print_tpl(self.message_foot_template, double_dash=double_dash)
 
