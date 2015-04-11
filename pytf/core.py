@@ -5,7 +5,7 @@ from collections import Iterable
 
 class TestResult(object):
 
-    def __init__(self, test_id, exception=None):
+    def __init__(self, test_id, exception=None, dependency_fail=False):
         self.id = test_id
         if not exception:
             self.success = True
@@ -13,6 +13,7 @@ class TestResult(object):
             self.success = False
         self.exception = exception
         self.messages = []
+        self.dependency_fail = dependency_fail
 
     def add_message(self, title, message):
         self.messages.append((title, message))

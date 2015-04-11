@@ -28,10 +28,20 @@ class TestExecutor(object):
         self.reporters = reporters
         self.contexts = contexts
 
+    def _get_test_code_id(self, test):
+        if inspect.ismethod(test.callback):
+            return id(test.callback.im_func.func_code)
+        elif inspect.isfunction(test.callback):
+            return id(test.callback.func_code)
+
     def execute(self, test_suite):
         global_test_result = []
         # Start reporters
         map(methodcaller('begin_tests'), self.reporters)
+
+        # Extract raw functions from test_suite
+        test_code_ids = {self._get_test_code_id(test) for test in test_suite}
+
         # Run tests
         for test in test_suite:
             # Call contexts
@@ -41,7 +51,19 @@ class TestExecutor(object):
             try:
                 test()
             except TestException as test_exception:
-                test_result = TestResult(test.id, test_exception)
+
+                # Check if it's a dependency fail or not
+                traceback = test_exception.exc_info[2]
+                while traceback:
+                    code_id = id(traceback.tb_frame.f_code)
+
+                    if code_id in test_code_ids and code_id != self._get_test_code_id(test):
+                        test_result = TestResult(test.id, test_exception, dependency_fail=True)
+                        break
+                    traceback = traceback.tb_next
+                else:
+                    # Not a dependency fail
+                    test_result = TestResult(test.id, test_exception)
             else:
                 test_result = TestResult(test.id)
 

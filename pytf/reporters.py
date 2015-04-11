@@ -22,12 +22,13 @@ class TextTestReporter(BaseReporter):
     message_foot_template = '{double_dash}\n'
     foot_template = '{status}: Ran {total} tests in {duration:.3f}s, ' \
                     '{failing} failing tests and {errors} ' \
-                    'tests in errors\n'
+                    'tests in errors. {dependencies} test in errors by dependency\n'
     start_template = 'Starting tests\n\n'
 
     def begin_tests(self):
         self.failed = []
         self.errors = []
+        self.dependencies = []
         self.runs = 0
         self.start = time.time()
         self._print_tpl(self.start_template)
@@ -38,8 +39,12 @@ class TextTestReporter(BaseReporter):
             self._print('.')
         else:
             if result.exception.phase == 'test':
-                self._print('F')
-                self.failed.append(result)
+                if result.dependency_fail is False:
+                    self._print('F')
+                    self.failed.append(result)
+                else:
+                    self._print('D')
+                    self.dependencies.append(result)
             else:
                 self._print('E')
                 self.errors.append(result)
@@ -50,6 +55,7 @@ class TextTestReporter(BaseReporter):
 
         self._print_results('ERROR', self.errors)
         self._print_results('FAILED', self.failed)
+        self._print_results('DEPENDENCIES', self.dependencies)
 
         print('')
 
@@ -90,7 +96,8 @@ class TextTestReporter(BaseReporter):
 
         self._print_tpl(self.foot_template, total=self.runs,
                         duration=running_time, failing=len(self.failed),
-                        errors=len(self.errors), status=status)
+                        errors=len(self.errors), status=status,
+                        dependencies=len(self.dependencies))
 
     def _print_tpl(self, template, **kwargs):
         self._print(template.format(**kwargs))
